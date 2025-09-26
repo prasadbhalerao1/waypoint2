@@ -25,7 +25,7 @@ const MoodRating: React.FC<MoodRatingProps> = ({ onComplete, showTitle = true, i
   };
 
   return (
-    <div className={`${!isUpdate ? 'min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100' : ''} flex items-center justify-center p-4`}>
+    <div className={`${!isUpdate ? 'min-h-screen themed-gradient' : ''} flex items-center justify-center p-4`}>
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-lg w-full">
         {showTitle && (
           <div className="text-center mb-8">
@@ -41,13 +41,9 @@ const MoodRating: React.FC<MoodRatingProps> = ({ onComplete, showTitle = true, i
               onClick={() => handleMoodSelect(value)}
               className={`w-full p-4 rounded-xl border-2 transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-wp-primary focus:ring-offset-2 ${
                 selectedMood === value
-                  ? 'border-2 shadow-lg'
+                  ? 'themed-border themed-surface/10 shadow-lg'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
-              style={{
-                borderColor: selectedMood === value ? currentTheme.primary : undefined,
-                backgroundColor: selectedMood === value ? currentTheme.primary + '10' : undefined
-              }}
               aria-label={`Rate mood as ${value} - ${moodLabels[value - 1]}`}
               aria-pressed={selectedMood === value}
               role="button"

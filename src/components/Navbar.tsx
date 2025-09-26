@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, User, Menu, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import ThemeSelectorButton from './ThemeSelectorButton';
 
 interface NavbarProps {
   isMobileMenuOpen: boolean;
@@ -29,6 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, setIsMobileMenuOpen }
         </div>
         
         <div className="flex items-center space-x-4">
+          <ThemeSelectorButton />
           <button 
             className="hidden sm:flex items-center space-x-2 px-4 py-2 text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
             style={{ backgroundColor: currentTheme.primary }}
@@ -40,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, setIsMobileMenuOpen }
           {/* Mobile Hamburger Menu Button */}
           <button
             onClick={toggleMobileMenu}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="lg:hidden p-2 rounded-lg hover:themed-surface transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent"
             aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMobileMenuOpen}
           >

@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobileMenuOpen, setIsMobileMenuOpen
     <>
       {/* Mobile Menu Overlay */}
       <div 
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 themed-text/50 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300 ${
           isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         }`}
         onClick={closeMobileMenu}

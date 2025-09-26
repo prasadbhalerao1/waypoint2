@@ -53,16 +53,21 @@ const Landing: React.FC = () => {
       {/* Hero Section */}
       <section className="px-8 py-16 lg:py-24">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center px-4 py-2 bg-teal-100 rounded-full text-teal-800 text-sm font-medium mb-6">
+          <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6"
+            style={{ 
+              backgroundColor: `${currentTheme.primary}20`,
+              color: currentTheme.primary 
+            }}
+          >
             <Heart className="w-4 h-4 mr-2" />
             Smart India Hackathon 2025
           </div>
           
-          <h1 className="text-5xl lg:text-7xl font-bold text-gray-800 mb-6 leading-tight">
-            Way<span className="text-teal-600">Point</span>
+          <h1 className="text-5xl lg:text-7xl font-bold themed-text mb-6 leading-tight">
+            Way<span className="themed-primary">Point</span>
           </h1>
           
-          <p className="text-xl lg:text-2xl text-teal-700 font-medium mb-4">
+          <p className="text-xl lg:text-2xl themed-primary font-medium mb-4">
             Your Campus Mental Health Companion
           </p>
           
@@ -167,21 +172,17 @@ const Landing: React.FC = () => {
           </section>
         )}
 
-      {/* Features Section */}
-      <section className="px-8 py-16 bg-white/50">
+            {/* Features Section */}
+      <section className="px-8 py-16 themed-surface bg-opacity-50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl lg:text-4xl font-bold text-center text-gray-800 mb-12">
-            Why Choose WayPoint?
-          </h2>
-          
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
-              <div key={index} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-                <div className="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center mb-6">
-                  <feature.icon className="w-8 h-8 text-teal-600" />
+              <div key={index} className="themed-surface rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-opacity-10 themed-border">
+                <div className={`w-16 h-16 rounded-xl flex items-center justify-center mb-6 themed-primary-bg bg-opacity-10`}>
+                  <feature.icon className={`w-8 h-8 themed-primary`} />
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4">{feature.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                <h3 className="text-xl font-bold themed-text mb-4">{feature.title}</h3>
+                <p className="themed-muted leading-relaxed">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -191,23 +192,23 @@ const Landing: React.FC = () => {
       {/* Testimonial Section */}
       <section className="px-8 py-16">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+          <div className="themed-surface rounded-2xl p-8 shadow-lg border border-opacity-10 themed-border">
             <div className="flex justify-center mb-6">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-6 h-6 text-yellow-400 fill-current" />
+                <Star key={i} className="w-6 h-6 themed-primary fill-current" />
               ))}
             </div>
-            <blockquote className="text-xl text-gray-700 italic mb-6 leading-relaxed">
+            <blockquote className="text-xl themed-text italic mb-6 leading-relaxed">
               "Mental health support shouldn't be a luxury. Every college student deserves access to 
               confidential, culturally-aware, and stigma-free psychological intervention tools."
             </blockquote>
-            <cite className="text-teal-600 font-medium">- Department of Student Welfare</cite>
+            <cite className="themed-primary font-medium">- Computer Science and Business system</cite>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="px-8 py-16 bg-gradient-to-r from-teal-600 to-blue-600">
+      <section className="px-8 py-16 themed-gradient">
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-3xl lg:text-4xl font-bold mb-6">
             Ready to Start Your Wellness Journey?
@@ -217,7 +218,7 @@ const Landing: React.FC = () => {
           </p>
           <button 
             onClick={() => navigate('/chat')}
-            className="px-8 py-4 bg-white text-teal-600 rounded-xl hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl text-lg font-medium"
+            className="themed-button-outline bg-white hover:bg-opacity-90 px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl text-lg font-medium"
           >
             Get Started Today
           </button>

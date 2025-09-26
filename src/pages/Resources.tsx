@@ -10,7 +10,7 @@ const Resources: React.FC = () => {
       type: 'Article',
       duration: '8 min read',
       tags: ['Stress', 'Academic'],
-      color: 'bg-blue-100 text-blue-800',
+      color: 'themed-surface themed-text',
     },
     {
       id: 2,
@@ -19,7 +19,7 @@ const Resources: React.FC = () => {
       type: 'Audio',
       duration: '15 min',
       tags: ['Meditation', 'Anxiety'],
-      color: 'bg-green-100 text-green-800',
+      color: 'themed-surface themed-primary',
     },
     {
       id: 3,
@@ -28,7 +28,7 @@ const Resources: React.FC = () => {
       type: 'Video',
       duration: '12 min',
       tags: ['Sleep', 'Wellness'],
-      color: 'bg-purple-100 text-purple-800',
+      color: 'themed-surface themed-primary',
     },
     {
       id: 4,
@@ -37,7 +37,7 @@ const Resources: React.FC = () => {
       type: 'Article',
       duration: '6 min read',
       tags: ['Social', 'Anxiety'],
-      color: 'bg-pink-100 text-pink-800',
+      color: 'themed-surface themed-primary',
     },
     {
       id: 5,
@@ -46,7 +46,7 @@ const Resources: React.FC = () => {
       type: 'Interactive',
       duration: '20 min',
       tags: ['Resilience', 'Growth'],
-      color: 'bg-orange-100 text-orange-800',
+      color: 'themed-surface themed-primary',
     },
     {
       id: 6,
@@ -75,8 +75,8 @@ const Resources: React.FC = () => {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Resource Hub</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h1 className="text-4xl font-bold themed-text mb-4">Resource Hub</h1>
+          <p className="text-xl themed-muted max-w-3xl mx-auto">
             Comprehensive mental health resources designed specifically for college students. 
             Access guides, videos, and tools in multiple regional languages.
           </p>
@@ -87,7 +87,7 @@ const Resources: React.FC = () => {
           {['All', 'Stress', 'Anxiety', 'Sleep', 'Academic', 'Social', 'Wellness'].map((tag) => (
             <button
               key={tag}
-              className="px-4 py-2 bg-white border border-gray-300 rounded-full text-gray-700 hover:bg-teal-50 hover:border-teal-300 hover:text-teal-700 transition-colors duration-200"
+              className={`px-4 py-2 themed-surface border themed-border rounded-full themed-text hover:themed-primary-bg hover:bg-opacity-10 transition-colors duration-200`}
             >
               {tag}
             </button>

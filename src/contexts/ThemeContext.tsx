@@ -80,6 +80,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     root.style.setProperty('--wp-muted', currentTheme.muted);
     root.style.setProperty('--wp-gradient-start', currentTheme.gradientStart);
     root.style.setProperty('--wp-gradient-end', currentTheme.gradientEnd);
+    
+    // Apply theme class to body
+    document.body.className = `themed-bg transition-colors duration-300`;
   }, [currentTheme]);
 
   const setThemeById = (themeId: string) => {
