@@ -1,0 +1,59 @@
+[
+  {
+    "id": 1,
+    "title": "Dealing with imposter syndrome in engineering",
+    "author": "Anonymous Student",
+    "timestamp": "2 hours ago",
+    "content": "I'm in my third year of computer science and constantly feel like I don't belong here. Everyone seems so much smarter than me. How do you deal with these feelings?",
+    "replies": [
+      {
+        "id": 1,
+        "author": "Supportive Senior",
+        "content": "I felt exactly the same way! What helped me was realizing that everyone struggles, they just don't talk about it openly. You earned your place here.",
+        "timestamp": "1 hour ago"
+      },
+      {
+        "id": 2,
+        "author": "Study Buddy",
+        "content": "Try keeping a 'wins journal' - write down one thing you accomplished each day, no matter how small. It really helps shift your perspective.",
+        "timestamp": "45 minutes ago"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Balancing work and studies - need advice",
+    "author": "Working Student",
+    "timestamp": "5 hours ago",
+    "content": "I'm working part-time to support my family while studying. I'm exhausted and my grades are suffering. Any tips for managing both?",
+    "replies": [
+      {
+        "id": 3,
+        "author": "Time Management Pro",
+        "content": "Time blocking saved my life! I schedule everything - work, study, even breaks. Also, talk to your professors about your situation. Many are understanding.",
+        "timestamp": "3 hours ago"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Homesickness in final year",
+    "author": "Final Year Student",
+    "timestamp": "1 day ago",
+    "content": "I thought I'd be over homesickness by now, but it's hitting hard in final year. Maybe it's the stress of graduation and job hunting?",
+    "replies": [
+      {
+        "id": 4,
+        "author": "Graduate Mentor",
+        "content": "This is so normal! Final year brings up a lot of emotions about change and the future. It's okay to feel homesick even after years away.",
+        "timestamp": "20 hours ago"
+      },
+      {
+        "id": 5,
+        "author": "Peer Support",
+        "content": "I'm going through the same thing. Video calls with family help, and I've started a gratitude practice to focus on the positive aspects of this journey.",
+        "timestamp": "18 hours ago"
+      }
+    ]
+  }
+]

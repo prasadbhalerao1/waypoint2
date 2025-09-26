@@ -1,0 +1,42 @@
+{
+  "1": {
+    "label": "Overwhelmed",
+    "tone": "gentle",
+    "urgency": "high",
+    "botGreeting": "I can see you're having a really tough time right now. I'm here to support you through this.",
+    "suggestedActions": ["crisis_support", "breathing", "get_counselor"],
+    "escalationTrigger": true
+  },
+  "2": {
+    "label": "Struggling",
+    "tone": "supportive",
+    "urgency": "medium",
+    "botGreeting": "It sounds like things are challenging today. Let's work through this together.",
+    "suggestedActions": ["quick_check", "grounding", "get_counselor", "resources"],
+    "escalationTrigger": false
+  },
+  "3": {
+    "label": "Okay",
+    "tone": "encouraging",
+    "urgency": "low",
+    "botGreeting": "How can I help you feel even better today?",
+    "suggestedActions": ["exercises", "resources", "chat"],
+    "escalationTrigger": false
+  },
+  "4": {
+    "label": "Good",
+    "tone": "upbeat",
+    "urgency": "low",
+    "botGreeting": "Great to see you're doing well! What would you like to explore today?",
+    "suggestedActions": ["exercises", "resources", "peer_forum"],
+    "escalationTrigger": false
+  },
+  "5": {
+    "label": "Great",
+    "tone": "enthusiastic",
+    "urgency": "low",
+    "botGreeting": "Fantastic! You're radiating positive energy. How can we keep this momentum going?",
+    "suggestedActions": ["exercises", "peer_forum", "resources"],
+    "escalationTrigger": false
+  }
+}

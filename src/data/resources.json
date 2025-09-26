@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "title": "Managing Exam Anxiety",
+    "description": "Evidence-based strategies to reduce test anxiety and improve performance",
+    "category": "Academic",
+    "duration": "8 min read",
+    "tags": ["anxiety", "exams", "stress"]
+  },
+  {
+    "id": 2,
+    "title": "Sleep Hygiene for Students",
+    "description": "Build healthy sleep habits that work with your college schedule",
+    "category": "Wellness",
+    "duration": "6 min read",
+    "tags": ["sleep", "health", "routine"]
+  },
+  {
+    "id": 3,
+    "title": "Building Social Connections",
+    "description": "Overcome social anxiety and build meaningful relationships on campus",
+    "category": "Social",
+    "duration": "10 min read",
+    "tags": ["social", "relationships", "anxiety"]
+  },
+  {
+    "id": 4,
+    "title": "Mindfulness for Beginners",
+    "description": "Simple meditation techniques you can practice anywhere",
+    "category": "Mindfulness",
+    "duration": "12 min read",
+    "tags": ["meditation", "mindfulness", "stress"]
+  }
+]

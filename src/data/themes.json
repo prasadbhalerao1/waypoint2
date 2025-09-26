@@ -1,0 +1,90 @@
+{
+  "default": {
+    "id": "default",
+    "name": "WayPoint Classic",
+    "category": "Default",
+    "primary": "#10B981",
+    "accent": "#34D399",
+    "bg": "#F0FFF6",
+    "surface": "#FFFFFF",
+    "text": "#1F2937",
+    "muted": "#6B7280",
+    "gradientStart": "#10B981",
+    "gradientEnd": "#34D399",
+    "progressLabel": "XP",
+    "mascot": "waypoint.svg",
+    "description": "The original WayPoint experience",
+    "completionMessages": {
+      "breathing": "Well done! +10 XP",
+      "grounding": "Level up! +15 XP",
+      "journaling": "Achievement unlocked! +20 XP",
+      "music": "Harmony achieved! +10 XP"
+    }
+  },
+  "home_ground": {
+    "id": "home_ground",
+    "name": "Home Ground",
+    "category": "Sports",
+    "primary": "#0EA5A4",
+    "accent": "#FFB703",
+    "bg": "#F0FDFA",
+    "surface": "#FFFFFF",
+    "text": "#1F2937",
+    "muted": "#6B7280",
+    "gradientStart": "#0EA5A4",
+    "gradientEnd": "#FFB703",
+    "progressLabel": "Training Points",
+    "mascot": "coach.svg",
+    "description": "Channel your athletic spirit",
+    "completionMessages": {
+      "breathing": "Great form! +10 Training Points",
+      "grounding": "Solid foundation! +15 Training Points",
+      "journaling": "Champion mindset! +20 Training Points",
+      "music": "Nice rhythm! +10 Training Points"
+    }
+  },
+  "studio": {
+    "id": "studio",
+    "name": "Studio",
+    "category": "Music",
+    "primary": "#6D28D9",
+    "accent": "#F472B6",
+    "bg": "#FAF5FF",
+    "surface": "#FFFFFF",
+    "text": "#1F2937",
+    "muted": "#6B7280",
+    "gradientStart": "#6D28D9",
+    "gradientEnd": "#F472B6",
+    "progressLabel": "Beats",
+    "mascot": "dj.svg",
+    "description": "Find your rhythm and flow",
+    "completionMessages": {
+      "breathing": "Perfect tempo! +10 Beats",
+      "grounding": "In the zone! +15 Beats",
+      "journaling": "Creative flow! +20 Beats",
+      "music": "Nice beat! +10 Beats"
+    }
+  },
+  "library": {
+    "id": "library",
+    "name": "Library",
+    "category": "Reading",
+    "primary": "#264653",
+    "accent": "#E9C46A",
+    "bg": "#FEFEFE",
+    "surface": "#FFFFFF",
+    "text": "#1F2937",
+    "muted": "#6B7280",
+    "gradientStart": "#264653",
+    "gradientEnd": "#E9C46A",
+    "progressLabel": "Pages",
+    "mascot": "book.svg",
+    "description": "Knowledge is your sanctuary",
+    "completionMessages": {
+      "breathing": "Chapter complete! +10 Pages",
+      "grounding": "Well researched! +15 Pages",
+      "journaling": "Story written! +20 Pages",
+      "music": "Harmonious read! +10 Pages"
+    }
+  }
+}
