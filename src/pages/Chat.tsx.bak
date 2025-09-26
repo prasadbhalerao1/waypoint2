@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { Send, Bot, User, Zap, BookOpen, Phone } from 'lucide-react';
@@ -8,14 +8,26 @@ import moodMapData from '../data/moodMap.json';
 
 interface Message {
   id: string;
-  text: string;
-  isUser: boolean;
+  text: string                  <button
+                    onClick={() => {
+                      const exercises = ['breathing', 'grounding', 'journaling', 'music'];
+                      const randomExercise = exercises[Math.floor(Math.random() * exercises.length)];
+                      setShowTaskCard(randomExercise);
+                    }}
+                    className="flex-1 py-2 px-3 text-xs rounded-lg border transition-all duration-200 hover:scale-105"
+                    style={{
+                      borderColor: currentTheme.primary,
+                      color: currentTheme.primary,
+                      backgroundColor: currentTheme.primary + '10'
+                    }}
+                  >
+                    <Zap className="w-3 h-3 mx-auto mb-1" />
+                    Exercise boolean;
   timestamp: Date;
   actions?: string[];
 }
 
 const Chat: React.FC = () => {
-  const navigate = useNavigate();
   const { currentTheme, mood } = useTheme();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
@@ -183,14 +195,14 @@ const Chat: React.FC = () => {
       case 'music':
         setShowTaskCard(action);
         break;
+      case 'resources':
+        navigate('/resources');
+        break;
       case 'get_counselor':
         setShowBookingModal(true);
         break;
       case 'quick_check':
         handleQuickCheck();
-        break;
-      case 'resources':
-        navigate('/resources');
         break;
       default:
         console.log('Action not implemented:', action);

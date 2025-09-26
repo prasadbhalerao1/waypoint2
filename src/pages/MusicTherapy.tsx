@@ -32,8 +32,8 @@ const MusicTherapy: React.FC = () => {
       id: 'meditation',
       title: 'Deep Meditation',
       description: 'A peaceful composition designed for meditation and mindfulness practice.',
-      audioFile: 'meditation.mp3',
-      duration: '5:00',
+      audioFile: 'calm_focus_loop.mp3',
+      duration: '2:00',
       category: 'Meditation',
       emoji: '🧘'
     },
@@ -41,8 +41,8 @@ const MusicTherapy: React.FC = () => {
       id: 'stress-relief',
       title: 'Stress Relief',
       description: 'Natural sounds combined with gentle melodies to help reduce stress.',
-      audioFile: 'stress_relief.mp3',
-      duration: '3:00',
+      audioFile: 'calm_focus_loop.mp3',
+      duration: '2:00',
       category: 'Relaxation',
       emoji: '🌊'
     }

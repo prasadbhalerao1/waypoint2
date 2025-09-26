@@ -19,7 +19,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ type, onComplete, onBack }) => {
 
   const tracks = [
     { name: 'Calm Focus (lo-fi)', file: '/assets/calm_focus_loop.mp3' },
-    { name: 'Relaxed Breathing (flute)', file: '/assets/relaxed_breathing_loop.mp3' }
+    { name: 'Ambient Sounds', file: '/assets/calm_focus_loop.mp3' }
   ];
 
   const getTaskConfig = () => {
