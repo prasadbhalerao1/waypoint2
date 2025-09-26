@@ -1,44 +1,47 @@
-import React, { useState } from 'react';
-import ThemeSelector from '../components/ThemeSelector';
-import MoodRating from '../components/MoodRating';
-import { Shield, Database, Users, Check } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ThemeSelector from "../components/ThemeSelector";
+import MoodRating from "../components/MoodRating";
+import { Shield, Database, Users, Check } from "lucide-react";
 
 const Onboarding: React.FC = () => {
-  const [step, setStep] = useState<'consent' | 'theme' | 'mood'>('consent');
+  const [step, setStep] = useState<"consent" | "theme" | "mood">("consent");
   const [consents, setConsents] = useState({
     screening: false,
     analytics: false,
-    counselor: false
+    counselor: false,
   });
 
   const handleConsentChange = (type: keyof typeof consents) => {
-    setConsents(prev => ({
+    setConsents((prev) => ({
       ...prev,
-      [type]: !prev[type]
+      [type]: !prev[type],
     }));
   };
 
   const handleConsentComplete = () => {
-    localStorage.setItem('waypoint-consents', JSON.stringify(consents));
-    setStep('theme');
+    localStorage.setItem("waypoint-consents", JSON.stringify(consents));
+    setStep("theme");
   };
 
   const handleThemeComplete = () => {
-    setStep('mood');
+    setStep("mood");
   };
+
+  const navigate = useNavigate();
 
   const handleMoodComplete = () => {
     // Set onboarding state before navigation
-    localStorage.setItem('waypoint-onboarded', 'true');
-    // Force a page reload to ensure all states are updated
-    window.location.href = '/home';
+    localStorage.setItem("waypoint-onboarded", "true");
+    // Use React Router navigation
+    navigate("/home");
   };
 
-  if (step === 'theme') {
+  if (step === "theme") {
     return <ThemeSelector onComplete={handleThemeComplete} />;
   }
 
-  if (step === 'mood') {
+  if (step === "mood") {
     return <MoodRating onComplete={handleMoodComplete} />;
   }
 
@@ -47,9 +50,12 @@ const Onboarding: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full">
         <div className="text-center mb-8">
           <Shield className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Privacy & Consent</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">
+            Privacy & Consent
+          </h2>
           <p className="text-gray-600">
-            Your privacy and wellbeing are our top priorities. Please review and choose your preferences.
+            Your privacy and wellbeing are our top priorities. Please review and
+            choose your preferences.
           </p>
         </div>
 
@@ -61,18 +67,21 @@ const Onboarding: React.FC = () => {
                   type="checkbox"
                   id="screening"
                   checked={consents.screening}
-                  onChange={() => handleConsentChange('screening')}
+                  onChange={() => handleConsentChange("screening")}
                   className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                 />
               </div>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
                   <Database className="w-5 h-5 text-blue-600" />
-                  <h3 className="font-semibold text-gray-800">Screening Data Storage</h3>
+                  <h3 className="font-semibold text-gray-800">
+                    Screening Data Storage
+                  </h3>
                 </div>
                 <p className="text-sm text-gray-600">
-                  Allow WayPoint to securely store your mental health screening responses to track 
-                  your progress over time and provide personalized recommendations.
+                  Allow WayPoint to securely store your mental health screening
+                  responses to track your progress over time and provide
+                  personalized recommendations.
                 </p>
               </div>
             </div>
@@ -85,18 +94,21 @@ const Onboarding: React.FC = () => {
                   type="checkbox"
                   id="analytics"
                   checked={consents.analytics}
-                  onChange={() => handleConsentChange('analytics')}
+                  onChange={() => handleConsentChange("analytics")}
                   className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                 />
               </div>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
                   <Database className="w-5 h-5 text-green-600" />
-                  <h3 className="font-semibold text-gray-800">Anonymized Analytics</h3>
+                  <h3 className="font-semibold text-gray-800">
+                    Anonymized Analytics
+                  </h3>
                 </div>
                 <p className="text-sm text-gray-600">
-                  Help improve WayPoint by sharing anonymized usage data. This helps us understand 
-                  how students use mental health resources and improve our services.
+                  Help improve WayPoint by sharing anonymized usage data. This
+                  helps us understand how students use mental health resources
+                  and improve our services.
                 </p>
               </div>
             </div>
@@ -109,18 +121,21 @@ const Onboarding: React.FC = () => {
                   type="checkbox"
                   id="counselor"
                   checked={consents.counselor}
-                  onChange={() => handleConsentChange('counselor')}
+                  onChange={() => handleConsentChange("counselor")}
                   className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                 />
               </div>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
                   <Users className="w-5 h-5 text-purple-600" />
-                  <h3 className="font-semibold text-gray-800">Share with Counselors</h3>
+                  <h3 className="font-semibold text-gray-800">
+                    Share with Counselors
+                  </h3>
                 </div>
                 <p className="text-sm text-gray-600">
-                  Allow sharing of relevant context with counselors during sessions to provide 
-                  more effective support. You can always revoke this permission later.
+                  Allow sharing of relevant context with counselors during
+                  sessions to provide more effective support. You can always
+                  revoke this permission later.
                 </p>
               </div>
             </div>
@@ -135,7 +150,9 @@ const Onboarding: React.FC = () => {
               <ul className="space-y-1 text-xs">
                 <li>• All data is encrypted and stored securely</li>
                 <li>• You can delete your data at any time</li>
-                <li>• We never share personal information with third parties</li>
+                <li>
+                  • We never share personal information with third parties
+                </li>
                 <li>• All counselor interactions are confidential</li>
               </ul>
             </div>

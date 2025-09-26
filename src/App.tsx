@@ -63,6 +63,7 @@ const AppContent: React.FC = () => {
                     <Route path="/" element={<Navigate to="/home" replace />} />
                     <Route path="/home" element={<Landing />} />
                     <Route path="/chat" element={<Chat />} />
+                    <Route path="*" element={<Navigate to="/home" replace />} />
                     <Route path="/resources" element={<Resources />} />
                     <Route path="/music-therapy" element={<MusicTherapy />} />
                     <Route path="/booking" element={<Booking />} />
