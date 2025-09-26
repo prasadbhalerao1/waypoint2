@@ -11,6 +11,7 @@ import Resources from './pages/Resources';
 import Booking from './pages/Booking';
 import Forum from './pages/Forum';
 import Admin from './pages/Admin';
+import MusicTherapy from './pages/MusicTherapy';
 
 // Main App Content with Theme
 const AppContent: React.FC = () => {
@@ -47,6 +48,7 @@ const AppContent: React.FC = () => {
                     <Route path="/home" element={<Landing />} />
                     <Route path="/chat" element={<Chat />} />
                     <Route path="/resources" element={<Resources />} />
+                    <Route path="/music-therapy" element={<MusicTherapy />} />
                     <Route path="/booking" element={<Booking />} />
                     <Route path="/forum" element={<Forum />} />
                     <Route path="/admin" element={<Admin />} />

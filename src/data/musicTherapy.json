@@ -1,0 +1,108 @@
+{
+  "musicResources": [
+    {
+      "id": "calm-focus",
+      "title": "Calm Focus",
+      "description": "Enhance concentration and reduce anxiety with this gentle ambient track.",
+      "audioFile": "calm_focus_loop.mp3",
+      "duration": "2:00",
+      "category": "Focus",
+      "emoji": "🎧",
+      "benefits": [
+        "Improved concentration",
+        "Reduced anxiety",
+        "Enhanced productivity"
+      ],
+      "recommended": ["Study sessions", "Work periods", "Reading"]
+    },
+    {
+      "id": "meditation",
+      "title": "Deep Meditation",
+      "description": "A peaceful composition designed for meditation and mindfulness practice.",
+      "audioFile": "meditation.mp3",
+      "duration": "5:00",
+      "category": "Meditation",
+      "emoji": "🧘",
+      "benefits": [
+        "Deep relaxation",
+        "Stress reduction",
+        "Mental clarity"
+      ],
+      "recommended": ["Morning meditation", "Mindfulness practice", "Stress relief"]
+    },
+    {
+      "id": "stress-relief",
+      "title": "Stress Relief",
+      "description": "Natural sounds combined with gentle melodies to help reduce stress.",
+      "audioFile": "stress_relief.mp3",
+      "duration": "3:00",
+      "category": "Relaxation",
+      "emoji": "🌊",
+      "benefits": [
+        "Stress reduction",
+        "Emotional balance",
+        "Better sleep quality"
+      ],
+      "recommended": ["Before sleep", "After work", "During breaks"]
+    },
+    {
+      "id": "healing-sounds",
+      "title": "Healing Sounds",
+      "description": "Traditional healing frequencies and nature sounds for deep relaxation.",
+      "audioFile": "healing.mp3",
+      "duration": "4:00",
+      "category": "Healing",
+      "emoji": "🌿",
+      "benefits": [
+        "Physical relaxation",
+        "Energy balancing",
+        "Holistic wellness"
+      ],
+      "recommended": ["Healing sessions", "Yoga practice", "Quiet moments"]
+    }
+  ],
+  "categories": [
+    {
+      "id": "focus",
+      "name": "Focus",
+      "description": "Tracks designed to enhance concentration and productivity",
+      "icon": "🎯"
+    },
+    {
+      "id": "meditation",
+      "name": "Meditation",
+      "description": "Music for mindfulness and meditation practices",
+      "icon": "🧘"
+    },
+    {
+      "id": "relaxation",
+      "name": "Relaxation",
+      "description": "Calming sounds for stress relief and unwinding",
+      "icon": "🌊"
+    },
+    {
+      "id": "healing",
+      "name": "Healing",
+      "description": "Therapeutic frequencies for holistic wellness",
+      "icon": "🌿"
+    }
+  ],
+  "tips": [
+    {
+      "title": "Optimal Listening",
+      "content": "Use headphones for the best experience and keep volume at a comfortable level."
+    },
+    {
+      "title": "Session Duration",
+      "content": "Start with shorter sessions (2-3 minutes) and gradually increase as comfortable."
+    },
+    {
+      "title": "Environment",
+      "content": "Find a quiet, comfortable space where you won't be disturbed."
+    },
+    {
+      "title": "Regularity",
+      "content": "Practice regularly for best results, ideally at the same time each day."
+    }
+  ]
+}

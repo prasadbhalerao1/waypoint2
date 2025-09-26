@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { MessageCircle, BookOpen, Calendar, Users, Home, X, BarChart3 } from 'lucide-react';
+import { MessageCircle, BookOpen, Calendar, Users, Home, X, BarChart3, Music } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface SidebarProps {
@@ -19,6 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobileMenuOpen, setIsMobileMenuOpen
     { path: '/', icon: Home, label: 'Home' },
     { path: '/chat', icon: MessageCircle, label: 'AI Assistant' },
     { path: '/resources', icon: BookOpen, label: 'Resource Hub' },
+    { path: '/music-therapy', icon: Music, label: 'Music Therapy' },
     { path: '/booking', icon: Calendar, label: 'Booking' },
     { path: '/forum', icon: Users, label: 'Peer Support' },
     { path: '/admin', icon: BarChart3, label: 'Admin Dashboard' },

@@ -121,10 +121,10 @@ const Footer: React.FC = () => {
         >
           <div className="text-center sm:text-left">
             <p className="text-wp-muted text-sm">
-              © 2024 WayPoint Mental Health Platform. All rights reserved.
+              © 2025 WayPoint Mental Health Platform. All rights reserved.
             </p>
             <p className="text-xs text-wp-muted mt-1">
-              Smart India Hackathon 2024 • Department of Student Welfare
+              Smart India Hackathon 2025 • Computer Science and Business system
             </p>
           </div>
           
