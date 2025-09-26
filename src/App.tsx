@@ -16,10 +16,31 @@ import MusicTherapy from './pages/MusicTherapy';
 // Main App Content with Theme
 const AppContent: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasOnboarded, setHasOnboarded] = useState(() => 
+    localStorage.getItem('waypoint-onboarded') === 'true'
+  );
   const { currentTheme } = useTheme();
-  
-  // Check if user has completed onboarding
-  const hasOnboarded = localStorage.getItem('waypoint-onboarded') === 'true';
+
+  // Listen for changes to onboarding status
+  React.useEffect(() => {
+    const checkOnboardingStatus = () => {
+      const status = localStorage.getItem('waypoint-onboarded') === 'true';
+      setHasOnboarded(status);
+    };
+
+    // Check initially and add listener
+    checkOnboardingStatus();
+    window.addEventListener('storage', checkOnboardingStatus);
+
+    // Custom event for internal state changes
+    const onOnboardingComplete = () => checkOnboardingStatus();
+    window.addEventListener('onboardingComplete', onOnboardingComplete);
+
+    return () => {
+      window.removeEventListener('storage', checkOnboardingStatus);
+      window.removeEventListener('onboardingComplete', onOnboardingComplete);
+    };
+  }, []);
 
   return (
     <div 
@@ -29,10 +50,30 @@ const AppContent: React.FC = () => {
       }}
     >
       <Routes>
-        <Route path="/" element={!hasOnboarded ? <Navigate to="/onboarding" replace /> : <Navigate to="/home" replace />} />
-        <Route path="/onboarding" element={hasOnboarded ? <Navigate to="/home" replace /> : <Onboarding />} />
-        <Route path="/home" element={
-          hasOnboarded ? (
+        <Route 
+          path="/" 
+          element={
+            hasOnboarded ? (
+              <Navigate to="/home" replace /> 
+            ) : (
+              <Navigate to="/onboarding" replace />
+            )
+          } 
+        />
+        <Route 
+          path="/onboarding" 
+          element={
+            hasOnboarded ? (
+              <Navigate to="/home" replace />
+            ) : (
+              <Onboarding />
+            )
+          } 
+        />
+        <Route 
+          path="/home" 
+          element={
+            hasOnboarded ? (
             <>
               <Navbar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
               <div className="flex">

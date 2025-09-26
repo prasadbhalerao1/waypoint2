@@ -31,10 +31,16 @@ const Onboarding: React.FC = () => {
   const navigate = useNavigate();
 
   const handleMoodComplete = () => {
-    // Set onboarding state before navigation
+    // Set onboarding state
     localStorage.setItem("waypoint-onboarded", "true");
-    // Use React Router navigation
-    navigate("/home");
+    
+    // Dispatch custom event to notify state change
+    window.dispatchEvent(new Event('onboardingComplete'));
+    
+    // Small delay to ensure state is updated before navigation
+    setTimeout(() => {
+      navigate("/home", { replace: true });
+    }, 0);
   };
 
   if (step === "theme") {
