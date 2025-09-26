@@ -1,21 +1,32 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { Heart, Shield, Users, Brain, ArrowRight, Star } from 'lucide-react';
+import MoodUpdateModal from '../components/MoodUpdateModal';
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
   const { currentTheme, mood, progress } = useTheme();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [showMoodUpdate, setShowMoodUpdate] = useState(false);
 
   useEffect(() => {
-    if (progress >= 3 && audioRef.current) {
-      audioRef.current.play().catch(() => {});
-    } else if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+    // Check if the user just completed onboarding
+    const hasJustOnboarded = localStorage.getItem('waypoint-onboarded') === 'true';
+    const musicStarted = localStorage.getItem('waypoint-music-started') === 'true';
+
+    if (hasJustOnboarded && !musicStarted && audioRef.current) {
+      audioRef.current.loop = true; // Make the music loop continuously
+      audioRef.current.volume = 0.3; // Set a comfortable volume level
+      audioRef.current.play()
+        .then(() => {
+          localStorage.setItem('waypoint-music-started', 'true');
+        })
+        .catch((error) => {
+          console.error('Error playing audio:', error);
+        });
     }
-  }, [progress]);
+  }, []);
 
   const features = [
     {
@@ -94,13 +105,14 @@ const Landing: React.FC = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() => navigate('/onboarding')}
+                  onClick={() => setShowMoodUpdate(true)}
                   aria-label="Update mood"
                   className="ml-auto text-xs text-wp-primary hover:text-wp-accent transition-colors duration-200"
                 >
                   Update
                 </button>
               </div>
+              {showMoodUpdate && <MoodUpdateModal onClose={() => setShowMoodUpdate(false)} />}
               {/* Assistant Message */}
               <div className="bg-white rounded-xl shadow p-4 flex-1">
                 <p className="text-wp-text">

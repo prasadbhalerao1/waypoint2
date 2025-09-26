@@ -29,7 +29,8 @@ const AppContent: React.FC = () => {
       }}
     >
       <Routes>
-        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="/" element={!hasOnboarded ? <Navigate to="/onboarding" replace /> : <Navigate to="/home" replace />} />
+        <Route path="/onboarding" element={hasOnboarded ? <Navigate to="/home" replace /> : <Onboarding />} />
         <Route path="/*" element={
           hasOnboarded ? (
             <>

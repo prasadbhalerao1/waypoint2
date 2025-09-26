@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import ThemeSelector from '../components/ThemeSelector';
 import MoodRating from '../components/MoodRating';
 import { Shield, Database, Users, Check } from 'lucide-react';
 
 const Onboarding: React.FC = () => {
-  const navigate = useNavigate();
   const [step, setStep] = useState<'consent' | 'theme' | 'mood'>('consent');
   const [consents, setConsents] = useState({
     screening: false,
@@ -30,8 +28,10 @@ const Onboarding: React.FC = () => {
   };
 
   const handleMoodComplete = () => {
+    // Set onboarding state before navigation
     localStorage.setItem('waypoint-onboarded', 'true');
-    navigate('/home', { replace: true });
+    // Force a page reload to ensure all states are updated
+    window.location.href = '/home';
   };
 
   if (step === 'theme') {
