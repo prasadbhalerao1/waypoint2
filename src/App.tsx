@@ -31,6 +31,21 @@ const AppContent: React.FC = () => {
       <Routes>
         <Route path="/" element={!hasOnboarded ? <Navigate to="/onboarding" replace /> : <Navigate to="/home" replace />} />
         <Route path="/onboarding" element={hasOnboarded ? <Navigate to="/home" replace /> : <Onboarding />} />
+        <Route path="/home" element={
+          hasOnboarded ? (
+            <>
+              <Navbar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+              <div className="flex">
+                <Sidebar isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+                <main className="flex-1 lg:ml-64 pt-16">
+                  <Landing />
+                </main>
+              </div>
+            </>
+          ) : (
+            <Navigate to="/onboarding" replace />
+          )
+        } />
         <Route path="/*" element={
           hasOnboarded ? (
             <>
