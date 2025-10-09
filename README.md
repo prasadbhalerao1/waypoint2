@@ -2,6 +2,9 @@
 
 A polished, hackathon-ready React (Vite) + Tailwind frontend for **WayPoint** that provides AI-guided mental health support, theme personalization, and music therapy features for college students.
 
+Check it out at 
+https://waypoint-demo-two.vercel.app
+
 ## Features
 
 - 🎨 **Runtime Theme Personalization** - 4 themes with CSS variables
