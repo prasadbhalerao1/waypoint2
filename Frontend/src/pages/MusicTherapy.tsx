@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { Play, Pause, Square, Volume2, Music, Headphones } from 'lucide-react';
+import { Music, Headphones } from 'lucide-react';
+import MusicTherapyCard from '../components/MusicTherapyCard';
+import musicData from '../data/musicTherapy.json';
 
 interface MusicResource {
   id: string;
@@ -18,35 +20,8 @@ const MusicTherapy: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const musicResources: MusicResource[] = [
-    {
-      id: 'calm-focus',
-      title: 'Calm Focus',
-      description: 'Enhance concentration and reduce anxiety with this gentle ambient track.',
-      audioFile: 'calm_focus_loop.mp3',
-      duration: '2:00',
-      category: 'Focus',
-      emoji: '🎧'
-    },
-    {
-      id: 'meditation',
-      title: 'Deep Meditation',
-      description: 'A peaceful composition designed for meditation and mindfulness practice.',
-      audioFile: 'calm_focus_loop.mp3',
-      duration: '2:00',
-      category: 'Meditation',
-      emoji: '🧘'
-    },
-    {
-      id: 'stress-relief',
-      title: 'Stress Relief',
-      description: 'Natural sounds combined with gentle melodies to help reduce stress.',
-      audioFile: 'calm_focus_loop.mp3',
-      duration: '2:00',
-      category: 'Relaxation',
-      emoji: '🌊'
-    }
-  ];
+  // Use music resources from JSON data
+  const musicResources: MusicResource[] = musicData.musicResources;
 
   const togglePlay = (resourceId: string) => {
     const audio = audioRef.current;
@@ -58,7 +33,8 @@ const MusicTherapy: React.FC = () => {
     } else {
       const resource = musicResources.find(r => r.id === resourceId);
       if (resource) {
-        audio.src = `/assets/${resource.audioFile}`;
+        // Temporarily use calm_focus_loop.mp3 for all tracks
+        audio.src = '/assets/calm_focus_loop.mp3';
         audio.play()
           .then(() => {
             setIsPlaying(resourceId);
@@ -112,53 +88,19 @@ const MusicTherapy: React.FC = () => {
         {/* Resources Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {musicResources.map(resource => (
-            <div 
+            <MusicTherapyCard
               key={resource.id}
-              className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
-            >
-              <div className="flex items-center space-x-3 mb-4">
-                <span className="text-2xl">{resource.emoji}</span>
-                <div>
-                  <h3 className="font-bold text-wp-text">{resource.title}</h3>
-                  <p className="text-sm text-wp-muted">{resource.category} • {resource.duration}</p>
-                </div>
-              </div>
-
-              <p className="text-wp-text mb-4">{resource.description}</p>
-
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={() => togglePlay(resource.id)}
-                  className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors duration-300"
-                  style={{ 
-                    backgroundColor: isPlaying === resource.id ? currentTheme.primary : currentTheme.primary + '20',
-                    color: isPlaying === resource.id ? 'white' : currentTheme.primary
-                  }}
-                >
-                  {isPlaying === resource.id ? (
-                    <>
-                      <Pause className="w-4 h-4" />
-                      <span>Pause</span>
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4" />
-                      <span>Play</span>
-                    </>
-                  )}
-                </button>
-
-                {isPlaying === resource.id && (
-                  <button
-                    onClick={stopPlayback}
-                    className="p-2 text-wp-muted hover:text-wp-text transition-colors duration-300"
-                    aria-label="Stop playback"
-                  >
-                    <Square className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            </div>
+              id={resource.id}
+              title={resource.title}
+              description={resource.description}
+              duration={resource.duration}
+              category={resource.category}
+              emoji={resource.emoji}
+              isPlaying={isPlaying === resource.id}
+              onTogglePlay={togglePlay}
+              onStop={stopPlayback}
+              currentTheme={currentTheme}
+            />
           ))}
         </div>
 
