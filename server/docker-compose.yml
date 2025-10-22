@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6.0
+    container_name: waypoint-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: waypoint_admin_pass
+      MONGO_INITDB_DATABASE: waypoint
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - waypoint-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/waypoint --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # WayPoint Backend Server
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: waypoint-server
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      MONGODB_URI: mongodb://admin:waypoint_admin_pass@mongodb:27017/waypoint?authSource=admin
+      # Add your environment variables here
+      # CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
+      # CLERK_FRONTEND_API: ${CLERK_FRONTEND_API}
+      # CLERK_JWT_KEY: ${CLERK_JWT_KEY}
+      # FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+      # AI_API_KEY: ${AI_API_KEY}
+      # ADMIN_EMAIL: ${ADMIN_EMAIL}
+      # ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - waypoint-network
+    volumes:
+      - ./src:/app/src
+      - /app/node_modules
+    command: npm run dev
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+
+networks:
+  waypoint-network:
+    driver: bridge
