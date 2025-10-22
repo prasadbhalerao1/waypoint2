@@ -244,7 +244,8 @@ Crisis Helplines: KIRAN 1800-599-0019 | Vandrevala 9999 666 555
     to: studentEmail,
     subject: '✅ Counseling Session Confirmed - WayPoint',
     text: textContent,
-    html: htmlContent
+    html: htmlContent,
+    replyTo: 'waypointplatform@gmail.com'
   };
 
   try {

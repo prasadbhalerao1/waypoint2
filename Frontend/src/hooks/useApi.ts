@@ -50,6 +50,17 @@ export function useApi() {
       return api.getAnalytics(from, to, token ?? undefined);
     },
 
+    // Quick Check
+    startQuickCheck: async () => {
+      const token = await getToken();
+      return api.startQuickCheck(token ?? undefined);
+    },
+
+    answerQuickCheck: async (sessionId: string, answer: string, conversationHistory: any[]) => {
+      const token = await getToken();
+      return api.answerQuickCheck(sessionId, answer, conversationHistory, token ?? undefined);
+    },
+
     // Non-authenticated endpoints (pass through)
     signup: api.signup,
   };

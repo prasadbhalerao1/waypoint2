@@ -21,6 +21,7 @@ import resourceRoutes from './routes/resources.js';
 import forumRoutes from './routes/forum.js';
 import adminRoutes from './routes/admin.js';
 import screeningRoutes from './routes/screening.js';
+import quickCheckRoutes from './routes/quickCheck.js';
 
 // Load environment variables
 dotenv.config();
@@ -69,6 +70,7 @@ app.use('/api/v1/resources', resourceRoutes);
 app.use('/api/v1/forum', forumRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/screening', screeningRoutes);
+app.use('/api/v1/quick-check', quickCheckRoutes);
 
 // 404 handler
 app.use((req, res) => {

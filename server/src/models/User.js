@@ -30,6 +30,14 @@ const userSchema = new mongoose.Schema({
     trim: true
   },
   
+  // Reddit-like anonymous username (e.g., "happyPixel")
+  username: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true
+  },
+  
   phone: {
     type: String,
     sparse: true

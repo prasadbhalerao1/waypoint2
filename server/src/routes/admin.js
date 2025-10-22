@@ -5,6 +5,7 @@
 
 import { Router } from 'express';
 import { requireAuth } from '@clerk/express';
+import { requireAdmin } from '../middleware/adminAuth.js';
 import {
   getAnalytics,
   getCounsellors,
@@ -16,9 +17,9 @@ import {
 
 const router = Router();
 
-// All admin routes require authentication
-// Admin check is performed in each controller
+// All admin routes require authentication AND admin authorization
 router.use(requireAuth());
+router.use(requireAdmin);
 
 // GET /api/v1/admin/analytics - Get analytics dashboard
 router.get('/analytics', getAnalytics);

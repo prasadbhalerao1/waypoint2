@@ -229,6 +229,30 @@ export const api = {
       }
     });
     return response.json();
+  },
+
+  // Quick Check endpoints
+  async startQuickCheck(token?: string): Promise<{ sessionId: string; question: string; questionNumber: number }> {
+    const response = await fetch(`${API_BASE_URL}/quick-check/start`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ''}`
+      }
+    });
+    return response.json();
+  },
+
+  async answerQuickCheck(sessionId: string, answer: string, conversationHistory: any[], token?: string): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/quick-check/answer`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token ?? ''}`
+      },
+      body: JSON.stringify({ sessionId, answer, conversationHistory })
+    });
+    return response.json();
   }
 };
 

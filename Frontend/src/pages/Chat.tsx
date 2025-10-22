@@ -5,6 +5,7 @@ import { useApi } from '../hooks/useApi';
 import { Send, Bot, User, Zap, BookOpen, Phone } from 'lucide-react';
 import TaskCard from '../components/TaskCard';
 import BookingModal from '../components/BookingModal';
+import QuickCheckModal from '../components/QuickCheckModal';
 import MarkdownMessage from '../components/MarkdownMessage';
 import moodMapData from '../data/moodMap.json';
 
@@ -24,6 +25,7 @@ const Chat: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [showTaskCard, setShowTaskCard] = useState<string | null>(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showQuickCheckModal, setShowQuickCheckModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -144,13 +146,7 @@ const Chat: React.FC = () => {
   };
 
   const handleQuickCheck = () => {
-    const checkMessage: Message = {
-      id: Date.now().toString(),
-      text: "Let's do a quick mental health check. On a scale of 1-10, how would you rate your stress level today?",
-      isUser: false,
-      timestamp: new Date()
-    };
-    setMessages(prev => [...prev, checkMessage]);
+    setShowQuickCheckModal(true);
   };
 
   const handleAction = (action: string) => {
@@ -416,6 +412,11 @@ const Chat: React.FC = () => {
       <BookingModal 
         isOpen={showBookingModal} 
         onClose={() => setShowBookingModal(false)} 
+      />
+
+      <QuickCheckModal
+        isOpen={showQuickCheckModal}
+        onClose={() => setShowQuickCheckModal(false)}
       />
     </div>
   );
