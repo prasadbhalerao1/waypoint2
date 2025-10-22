@@ -6,7 +6,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAdmin } from '../hooks/useAdmin';
-import { AlertTriangle } from 'lucide-react';
 
 interface ProtectedAdminRouteProps {
   children: React.ReactNode;
@@ -27,22 +26,9 @@ const ProtectedAdminRoute: React.FC<ProtectedAdminRouteProps> = ({ children }) =
     );
   }
 
-  // Redirect non-admin users to home page
+  // Redirect non-admin users to home page without interim UI to avoid flicker
   if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertTriangle className="w-8 h-8 text-red-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600 mb-6">
-            You do not have permission to access this page. This area is restricted to administrators only.
-          </p>
-          <Navigate to="/home" replace />
-        </div>
-      </div>
-    );
+    return <Navigate to="/" replace />;
   }
 
   // User is admin, render the protected content
