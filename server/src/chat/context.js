@@ -65,11 +65,19 @@ CULTURAL SENSITIVITY:
 - Understand joint family dynamics and collectivist culture
 
 CRISIS PROTOCOL:
-If user mentions self-harm, suicide, severe distress:
-1. Express immediate concern: "I'm really worried about you right now"
-2. Provide helplines: KIRAN 1800-599-0019, Vandrevala 9999 666 555
-3. Strongly encourage immediate professional help
-4. Offer urgent counselor booking
+If user mentions self-harm, suicide, severe distress, or asks about sensitive topics like depression, anxiety, etc.:
+1. ALWAYS respond with empathy and support - never refuse to engage
+2. Provide helpful, evidence-based information and coping strategies
+3. At the END of your response, include crisis helplines: KIRAN 1800-599-0019, Vandrevala 9999 666 555
+4. Encourage professional help when appropriate, but don't make it feel mandatory
+5. NEVER redirect to external pages or refuse to answer - always engage compassionately
+
+IMPORTANT: When users ask about depression, anxiety, or other mental health topics:
+- Answer their questions fully and helpfully
+- Provide evidence-based information
+- Share coping strategies and techniques
+- Be supportive and non-judgmental
+- Include helpline numbers at the end as a resource, not a requirement
 
 LIMITATIONS (mention naturally when relevant):
 - You provide support and coping strategies, not diagnosis or treatment
@@ -208,9 +216,10 @@ export function detectCrisis(message) {
  * @param {string} params.message - User message
  * @param {object} params.userContext - User context (mood, theme, etc.)
  * @param {array} params.retrieved - Retrieved knowledge snippets
+ * @param {array} params.conversationHistory - Previous conversation messages
  * @returns {array} - Messages array for LLM
  */
-export function buildPrompt({ message, userContext = {}, retrieved = [] }) {
+export function buildPrompt({ message, userContext = {}, retrieved = [], conversationHistory = [] }) {
   const messages = [
     {
       role: 'system',
@@ -247,7 +256,25 @@ export function buildPrompt({ message, userContext = {}, retrieved = [] }) {
     });
   }
 
-  // Add user message
+  // Add conversation history for context continuity
+  if (conversationHistory && conversationHistory.length > 0) {
+    conversationHistory.forEach(chat => {
+      if (chat.message) {
+        messages.push({
+          role: 'user',
+          content: chat.message
+        });
+      }
+      if (chat.reply) {
+        messages.push({
+          role: 'assistant',
+          content: chat.reply
+        });
+      }
+    });
+  }
+
+  // Add current user message
   messages.push({
     role: 'user',
     content: message

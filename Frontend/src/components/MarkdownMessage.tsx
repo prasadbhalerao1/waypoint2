@@ -11,6 +11,11 @@ interface MarkdownMessageProps {
  */
 const MarkdownMessage: React.FC<MarkdownMessageProps> = ({ content, className = '' }) => {
   const renderContent = (text: string) => {
+    // Handle undefined or null content
+    if (!text) {
+      return <p className="text-gray-500 italic">No content available</p>;
+    }
+    
     const lines = text.split('\n');
     const elements: JSX.Element[] = [];
     let inCodeBlock = false;

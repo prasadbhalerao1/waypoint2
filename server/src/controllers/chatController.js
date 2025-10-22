@@ -25,8 +25,13 @@ export const sendMessage = async (req, res, next) => {
     const { message, mood, theme } = req.body;
 
     // Validate input
-    if (!message || typeof message !== 'string') {
-      return res.status(400).json({ error: 'Message is required' });
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+      return res.status(400).json({ error: 'Message is required and cannot be empty' });
+    }
+
+    // Ensure message is not too long
+    if (message.length > 5000) {
+      return res.status(400).json({ error: 'Message is too long. Please keep it under 5000 characters.' });
     }
 
     // Sanitize and redact PII from user message
@@ -45,6 +50,16 @@ export const sendMessage = async (req, res, next) => {
         const providerInfo = getAIProviderInfo();
         console.log(`🤖 Using AI provider: ${providerInfo.provider} (${providerInfo.model})`);
 
+        // Retrieve recent conversation history (last 10 messages for context)
+        const recentChats = await ChatLog.find({ userId })
+          .sort({ createdAt: -1 })
+          .limit(10)
+          .select('message reply createdAt')
+          .lean();
+        
+        // Reverse to get chronological order (oldest first)
+        recentChats.reverse();
+
         // TODO: Generate embedding for RAG retrieval
         // const embedding = await generateEmbedding(redacted);
         // const retrieved = await retrieveRelevantDocs(embedding, 3);
@@ -56,7 +71,8 @@ export const sendMessage = async (req, res, next) => {
         const messages = buildPrompt({
           message: redacted,
           userContext: { mood, theme },
-          retrieved
+          retrieved,
+          conversationHistory: recentChats
         });
 
         // Call unified AI service (automatically routes to OpenAI or Gemini)

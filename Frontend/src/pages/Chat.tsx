@@ -110,12 +110,15 @@ const Chat: React.FC = () => {
       
       const moodData = moodMapData[mood.toString() as keyof typeof moodMapData];
       
+      // Ensure we have a valid reply
+      const replyText = response?.reply || "I'm here to help. Could you tell me more about what's on your mind?";
+      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: response.reply,
+        text: replyText,
         isUser: false,
         timestamp: new Date(),
-        actions: response.actions || moodData.suggestedActions
+        actions: response?.actions || moodData?.suggestedActions || []
       };
 
       setMessages(prev => [...prev, aiMessage]);

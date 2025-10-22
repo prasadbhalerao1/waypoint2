@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { MessageCircle, BookOpen, Calendar, Users, Home, X, BarChart3, Music, ClipboardList } from 'lucide-react';
 import { UserButton, SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAdmin } from '../hooks/useAdmin';
 
 interface SidebarProps {
   isMobileMenuOpen: boolean;
@@ -11,12 +12,13 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const { currentTheme } = useTheme();
+  const { isAdmin } = useAdmin();
   
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
   };
 
-  const navItems = [
+  const allNavItems = [
     { path: '/', icon: Home, label: 'Home' },
     { path: '/chat', icon: MessageCircle, label: 'AI Assistant' },
     { path: '/screening', icon: ClipboardList, label: 'Mental Health Screening' },
@@ -24,8 +26,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isMobileMenuOpen, setIsMobileMenuOpen
     { path: '/music-therapy', icon: Music, label: 'Music Therapy' },
     { path: '/booking', icon: Calendar, label: 'Booking' },
     { path: '/forum', icon: Users, label: 'Peer Support' },
-    { path: '/admin', icon: BarChart3, label: 'Admin Dashboard' },
+    { path: '/admin', icon: BarChart3, label: 'Admin Dashboard', adminOnly: true },
   ];
+
+  // Filter nav items based on admin status
+  const navItems = allNavItems.filter(item => !item.adminOnly || isAdmin);
 
   return (
     <>

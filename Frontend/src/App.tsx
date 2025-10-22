@@ -5,6 +5,7 @@ import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import Onboarding from './pages/Onboarding';
 import Chat from './pages/Chat';
 import Landing from './pages/Landing';
@@ -132,7 +133,11 @@ const AppContent: React.FC = () => {
                         <Route path="/music-therapy" element={<MusicTherapy />} />
                         <Route path="/booking" element={<Booking />} />
                         <Route path="/forum" element={<ForumNew />} />
-                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/admin" element={
+                          <ProtectedAdminRoute>
+                            <Admin />
+                          </ProtectedAdminRoute>
+                        } />
                         <Route path="*" element={<Navigate to="/home" replace />} />
                       </Routes>
                     </main>

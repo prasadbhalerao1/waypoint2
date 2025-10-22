@@ -4,13 +4,18 @@
  */
 
 import { getAuth } from '@clerk/express';
-import { getStructuredOutput, getChatCompletion, isAIConfigured } from '../services/aiService.js';
+import { isQuickCheckAIReady, getQuickCheckResponse, getQuickCheckFinalAssessment } from '../services/quickCheckAI.js';
 import User from '../models/User.js';
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Load Quick Check prompt
-const PROMPT_FILE = path.join(process.cwd(), 'QUICK_CHECK_PROMPT.txt');
+// Get current directory for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load Quick Check prompt - go up from controllers to server root
+const PROMPT_FILE = path.join(__dirname, '..', '..', 'QUICK_CHECK_PROMPT.txt');
 let quickCheckPrompt = null;
 
 async function loadQuickCheckPrompt() {
@@ -20,50 +25,30 @@ async function loadQuickCheckPrompt() {
       console.log('✅ Quick Check prompt loaded successfully');
     } catch (error) {
       console.error('❌ Error loading Quick Check prompt:', error.message);
-      quickCheckPrompt = 'You are a compassionate mental health assistant conducting a brief check-in.';
+      console.error('Looking for file at:', PROMPT_FILE);
+      // Fallback prompt
+      quickCheckPrompt = `You are a compassionate mental health assistant conducting a brief adaptive "Quick Check" (about 10 short questions).
+
+Your goals:
+1. Quickly learn how the user is doing (mood, sleep, appetite, energy, stress, supports, coping)
+2. Adapt each next question based on the user's previous answers
+3. Identify urgent safety concerns and escalate appropriately
+4. Provide a clear summary and safe next steps
+
+Keep each question short (one sentence). Ask follow-up questions based on their answers.
+Be warm, respectful, and use simple language.
+
+When you've asked about 10 questions, provide a final assessment in JSON format with:
+- transcript (all Q&A pairs)
+- summary (1-3 sentences)
+- risk_level (low/moderate/high)
+- suggested_next_steps (array of actions)
+- resources (array of helplines/resources)
+- meta (questions_asked, readiness_score)`;
     }
   }
   return quickCheckPrompt;
 }
-
-// JSON Schema for structured output
-const quickCheckSchema = {
-  type: "object",
-  properties: {
-    transcript: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          q: { type: "string" },
-          a: { type: "string" }
-        },
-        required: ["q", "a"]
-      }
-    },
-    summary: { type: "string" },
-    risk_level: { 
-      type: "string",
-      enum: ["low", "moderate", "high"]
-    },
-    suggested_next_steps: {
-      type: "array",
-      items: { type: "string" }
-    },
-    resources: {
-      type: "array",
-      items: { type: "string" }
-    },
-    meta: {
-      type: "object",
-      properties: {
-        approx_questions_asked: { type: "number" },
-        readiness_score: { type: "number" }
-      }
-    }
-  },
-  required: ["transcript", "summary", "risk_level", "suggested_next_steps", "resources", "meta"]
-};
 
 /**
  * POST /api/v1/quick-check/start
@@ -79,8 +64,18 @@ export const startQuickCheck = async (req, res, next) => {
 
     await loadQuickCheckPrompt();
 
-    // Return the first question
-    const firstQuestion = "Thanks for checking in. How have you been feeling lately—mood, energy, or stress?";
+    // Check if AI is configured
+    if (!isQuickCheckAIReady()) {
+      return res.status(503).json({ 
+        error: 'AI service not configured',
+        message: 'Quick Check requires AI configuration. Please contact support.'
+      });
+    }
+
+    // Use AI to generate the first question
+    const instruction = 'Start the Quick Check session. Provide only the first question, nothing else. Keep it short and conversational.';
+    
+    const firstQuestion = await getQuickCheckResponse(quickCheckPrompt, [], instruction);
 
     res.json({
       sessionId: Date.now().toString(),
@@ -89,6 +84,7 @@ export const startQuickCheck = async (req, res, next) => {
     });
 
   } catch (error) {
+    console.error('❌ Quick Check start error:', error.message);
     next(error);
   }
 };
@@ -114,44 +110,20 @@ export const processAnswer = async (req, res, next) => {
     await loadQuickCheckPrompt();
 
     // Check if AI is configured
-    if (!isAIConfigured()) {
+    if (!isQuickCheckAIReady()) {
       return res.status(503).json({ 
         error: 'AI service not configured',
         message: 'Quick Check requires AI configuration. Please contact support.'
       });
     }
 
-    // Build conversation for AI
-    const messages = [
-      {
-        role: 'system',
-        content: quickCheckPrompt
-      }
-    ];
-
-    // Add conversation history
-    conversationHistory.forEach(turn => {
-      messages.push({ role: 'assistant', content: turn.question });
-      messages.push({ role: 'user', content: turn.answer });
-    });
-
-    // Check if we should end the session (after ~10 questions or if user indicates completion)
-    const shouldEnd = conversationHistory.length >= 9 || 
-                      answer.toLowerCase().includes('no, that\'s all') ||
-                      answer.toLowerCase().includes('nothing else');
+    // Check if we should end the session (after ~10 questions)
+    const shouldEnd = conversationHistory.length >= 10;
 
     if (shouldEnd) {
-      // Get final structured output
-      messages.push({
-        role: 'user',
-        content: 'Please provide the final assessment in JSON format as specified.'
-      });
-
+      // Get final assessment
       try {
-        const result = await getStructuredOutput(messages, quickCheckSchema, {
-          temperature: 0.7,
-          max_tokens: 1500
-        });
+        const result = await getQuickCheckFinalAssessment(quickCheckPrompt, conversationHistory);
 
         // Update user's last activity
         const user = await User.findOne({ clerkId: userId });
@@ -165,18 +137,14 @@ export const processAnswer = async (req, res, next) => {
         });
 
       } catch (error) {
-        console.error('❌ Structured output error:', error.message);
+        console.error('❌ Final assessment error:', error.message);
         
-        // Fallback: get text summary
-        const fallbackResult = await getChatCompletion(messages, {
-          temperature: 0.7,
-          max_tokens: 1000
-        });
-
+        // Fallback result
         res.json({
           completed: true,
           result: {
-            summary: fallbackResult,
+            transcript: conversationHistory,
+            summary: 'Thank you for completing the Quick Check. Based on your responses, it seems you could benefit from additional support.',
             risk_level: 'moderate',
             suggested_next_steps: [
               'Consider talking to a counselor',
@@ -198,24 +166,46 @@ export const processAnswer = async (req, res, next) => {
 
     } else {
       // Get next question
-      messages.push({
-        role: 'user',
-        content: 'Based on my answer, what is your next adaptive question? Provide only the question text, nothing else.'
-      });
+      const instruction = `Based on the user's previous answer, generate your next adaptive question. 
+      
+Provide ONLY the question text, nothing else. Keep it short (one sentence) and conversational.`;
 
-      const nextQuestion = await getChatCompletion(messages, {
-        temperature: 0.8,
-        max_tokens: 150
-      });
+      try {
+        const nextQuestion = await getQuickCheckResponse(quickCheckPrompt, conversationHistory, instruction);
 
-      res.json({
-        completed: false,
-        question: nextQuestion.trim(),
-        questionNumber: conversationHistory.length + 1
-      });
+        res.json({
+          completed: false,
+          question: nextQuestion,
+          questionNumber: conversationHistory.length + 1
+        });
+      } catch (aiError) {
+        console.error('❌ AI error generating next question:', aiError.message);
+        
+        // Fallback to a generic question
+        const fallbackQuestions = [
+          "How has your sleep been lately?",
+          "What activities help you feel better when you're stressed?",
+          "On a scale of 1-10, how would you rate your overall wellbeing this week?",
+          "Is there anything specific that's been worrying you?",
+          "How connected do you feel to friends or family right now?",
+          "What's one thing you wish you could change about how you're feeling?",
+          "Have you been able to do things you normally enjoy?",
+          "How has your appetite been recently?"
+        ];
+        
+        const questionIndex = Math.min(conversationHistory.length, fallbackQuestions.length - 1);
+        
+        res.json({
+          completed: false,
+          question: fallbackQuestions[questionIndex],
+          questionNumber: conversationHistory.length + 1
+        });
+      }
     }
 
   } catch (error) {
+    console.error('❌ Quick Check process error:', error.message);
+    console.error('Error stack:', error.stack);
     next(error);
   }
 };
