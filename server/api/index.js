@@ -28,13 +28,21 @@ let dbInitialized = false;
 app.use(async (req, res, next) => {
   if (!dbInitialized) {
     try {
+      console.log('🔄 Attempting database connection...');
+      console.log('   MONGODB_URI exists:', !!process.env.MONGODB_URI);
+      console.log('   MONGODB_URI length:', process.env.MONGODB_URI?.length || 0);
       await connectDB();
       dbInitialized = true;
+      console.log('✅ Database initialized successfully');
     } catch (error) {
-      console.error('Failed to initialize database:', error.message);
+      console.error('❌ Failed to initialize database');
+      console.error('   Error name:', error.name);
+      console.error('   Error message:', error.message);
+      console.error('   Stack:', error.stack);
       return res.status(503).json({ 
         error: 'Service temporarily unavailable',
-        message: 'Database connection failed. Please check environment variables.'
+        message: 'Database connection failed. Please check environment variables.',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
   }
