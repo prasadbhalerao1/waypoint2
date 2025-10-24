@@ -82,7 +82,15 @@ const Chat: React.FC = () => {
       setMessages([initialMessage]);
       isInitialLoad.current = false; // Mark initial load as complete
     } catch (error) {
-      console.error('Failed to load initial message:', error);
+      // Fallback to basic greeting if theme-specific message fails
+      const fallbackMessage: Message = {
+        id: 'initial',
+        text: "Hi there! I'm your WayPoint assistant. How can I help you today?",
+        isUser: false,
+        timestamp: new Date(),
+        actions: ['quick_check', 'exercises', 'resources']
+      };
+      setMessages([fallbackMessage]);
     } finally {
       setIsLoading(false);
     }
