@@ -4,6 +4,10 @@
 
 WayPoint bridges the gap in college mental health support with AI-guided assistance, confidential counseling booking, peer support forums, and comprehensive wellness resources - all designed specifically for Indian college students.
 
+You can check out the current demo at :-
+
+[`https://waypoint-demo-two.vercel.app`](https://waypoint-demo-two.vercel.app)
+
 ## 🎯 Core Features
 
 ### For Students
