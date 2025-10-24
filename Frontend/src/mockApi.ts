@@ -149,6 +149,19 @@ export const api = {
       credentials: 'include',
       body: JSON.stringify({ message, theme, mood })
     });
+
+    // Handle non-JSON responses (e.g., Vercel error pages)
+    if (!response.ok) {
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || errorData.message || `API Error: ${response.status}`);
+      } else {
+        const text = await response.text();
+        throw new Error(`Server Error (${response.status}): ${text.substring(0, 100)}`);
+      }
+    }
+
     return response.json();
   },
 

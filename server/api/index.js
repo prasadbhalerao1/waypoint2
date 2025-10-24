@@ -21,10 +21,25 @@ import adminRoutes from '../src/routes/admin.js';
 import screeningRoutes from '../src/routes/screening.js';
 import quickCheckRoutes from '../src/routes/quickCheck.js';
 
-// Connect to MongoDB (will reuse connection across invocations)
-connectDB();
-
 const app = express();
+
+// Connect to MongoDB on first request (will reuse connection across invocations)
+let dbInitialized = false;
+app.use(async (req, res, next) => {
+  if (!dbInitialized) {
+    try {
+      await connectDB();
+      dbInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize database:', error.message);
+      return res.status(503).json({ 
+        error: 'Service temporarily unavailable',
+        message: 'Database connection failed. Please check environment variables.'
+      });
+    }
+  }
+  next();
+});
 
 // CORS middleware MUST be first (custom implementation with allowlist)
 app.use(corsMiddleware);
