@@ -38,7 +38,7 @@ interface Comment {
 }
 
 const ForumNew: React.FC = () => {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://waypoint-demo-two-backend.vercel.app/api/v1';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://waypoint-backend.vercel.app/api/v1';
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const { getToken, userId } = useAuth();

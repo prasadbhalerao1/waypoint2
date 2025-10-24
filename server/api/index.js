@@ -26,11 +26,13 @@ connectDB();
 
 const app = express();
 
-// Security middleware
-app.use(helmet());
-
-// CORS middleware (custom implementation with allowlist)
+// CORS middleware MUST be first (custom implementation with allowlist)
 app.use(corsMiddleware);
+
+// Security middleware
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // Body parser
 app.use(express.json({ limit: '10mb' }));
