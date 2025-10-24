@@ -112,22 +112,25 @@ Every folder contains its own `README.md` explaining the code's purpose.
 
 3. **Configure environment variables**
    
-   **Frontend** (`Frontend/.env.local`):
-   ```env
-   VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
-   VITE_API_BASE_URL=http://localhost:4000/api/v1
-   ```
+   Environment files are pre-configured for both development and production:
    
-   **Backend** (`server/.env`):
-   ```env
-   MONGODB_URI=your_mongodb_connection_string
-   CLERK_SECRET_KEY=your_clerk_secret_key
-   CLERK_FRONTEND_API=your_clerk_frontend_api
-   FRONTEND_ORIGIN=http://localhost:5173
-   AI_PROVIDER=gemini
-   GEMINI_API_KEY=your_gemini_api_key
-   ENCRYPTION_KEY=your_32_byte_encryption_key
-   ```
+   **Frontend**:
+   - `.env.development` - Already configured for local development
+   - `.env.production` - Already configured for Vercel deployment
+   - Update `.env.development` if needed (default: `http://localhost:4000/api/v1`)
+   
+   **Backend**:
+   - `.env.development` - Already configured for local development
+   - `.env.production` - Already configured for production deployment
+   - Add your API keys to `.env.development`:
+     ```env
+     MONGODB_URI=your_mongodb_connection_string
+     CLERK_SECRET_KEY=your_clerk_secret_key
+     GEMINI_API_KEY=your_gemini_api_key
+     ENCRYPTION_KEY=your_32_byte_encryption_key
+     ```
+   
+   See `DEPLOYMENT_GUIDE.md` for complete configuration details.
 
 4. **Run the application**
    

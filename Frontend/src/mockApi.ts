@@ -2,7 +2,7 @@
 // Set USE_MOCK_API=true to use this, false to use real backend
 
 const USE_MOCK_API = false; // Change to false when backend is available
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://waypoint-demo-backend.vercel.app/api/v1';
 
 // Types
 interface User {

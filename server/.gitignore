@@ -4,10 +4,12 @@ package-lock.json
 yarn.lock
 
 # Environment variables
+# Ignore all env files except examples
+.env*
+!*.example
 
-.env
-.env.local
 .env.production
+.env.development
 
 # Logs
 logs

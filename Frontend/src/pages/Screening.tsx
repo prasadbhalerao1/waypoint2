@@ -18,6 +18,7 @@ interface ScreeningData {
 }
 
 const Screening: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://waypoint-demo-two-backend.vercel.app/api/v1';
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const api = useApi();
@@ -39,7 +40,7 @@ const Screening: React.FC = () => {
 
   const loadScreening = async (type: 'PHQ-9' | 'GAD-7') => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api/v1'}/screening/questions?type=${type}`);
+      const response = await fetch(`${API_BASE_URL}/screening/questions?type=${type}`);
       const data = await response.json();
       setScreeningData(data);
       setResponses(new Array(data.questions.length).fill(-1));
@@ -74,7 +75,7 @@ const Screening: React.FC = () => {
       }));
 
       const token = await (api as any).getToken?.() ?? undefined;
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api/v1'}/screening`, {
+      const response = await fetch(`${API_BASE_URL}/screening`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +100,7 @@ const Screening: React.FC = () => {
   const loadHistory = async () => {
     try {
       const token = await (api as any).getToken?.() ?? undefined;
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api/v1'}/screening/history`, {
+      const response = await fetch(`${API_BASE_URL}/screening/history`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

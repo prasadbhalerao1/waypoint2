@@ -17,6 +17,7 @@ interface CounselorMatch {
 }
 
 const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://waypoint-demo-two-backend.vercel.app/api/v1';
   const { currentTheme } = useTheme();
   const [step, setStep] = useState<'consent' | 'searching' | 'matched' | 'calling'>('consent');
   const [counselor, setCounselor] = useState<CounselorMatch | null>(null);
@@ -39,7 +40,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ isOpen, onClose }) => {
         consentGiven: shareConsent
       };
       
-      const res = await fetch('http://localhost:4000/api/v1/bookings', {
+      const res = await fetch(`${API_BASE_URL}/bookings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

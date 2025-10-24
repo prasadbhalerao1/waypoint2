@@ -38,6 +38,7 @@ interface Comment {
 }
 
 const ForumNew: React.FC = () => {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://waypoint-demo-two-backend.vercel.app/api/v1';
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const { getToken, userId } = useAuth();
@@ -85,8 +86,8 @@ const ForumNew: React.FC = () => {
     setIsLoading(true);
     try {
       const url = selectedCategory === 'all' 
-        ? `${import.meta.env.VITE_API_BASE_URL}/forum/posts`
-        : `${import.meta.env.VITE_API_BASE_URL}/forum/posts?category=${selectedCategory}`;
+        ? `${API_BASE_URL}/forum/posts`
+        : `${API_BASE_URL}/forum/posts?category=${selectedCategory}`;
       
       const response = await fetch(url);
       const data = await response.json();
@@ -100,7 +101,7 @@ const ForumNew: React.FC = () => {
 
   const loadPostWithComments = async (postId: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/forum/posts/${postId}`);
+      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}`);
       const data = await response.json();
       setSelectedPost(data.post);
       setComments(data.comments || []);
@@ -114,7 +115,7 @@ const ForumNew: React.FC = () => {
     
     try {
       const token = await getToken();
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/forum/posts`, {
+      const response = await fetch(`${API_BASE_URL}/forum/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +144,7 @@ const ForumNew: React.FC = () => {
     
     try {
       const token = await getToken();
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/forum/posts/${selectedPost._id}/comments`, {
+      const response = await fetch(`${API_BASE_URL}/forum/posts/${selectedPost._id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +165,7 @@ const ForumNew: React.FC = () => {
   const handleLikePost = async (postId: string) => {
     try {
       const token = await getToken();
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/forum/posts/${postId}/like`, {
+      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}/like`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -198,7 +199,7 @@ const ForumNew: React.FC = () => {
   const handleLikeComment = async (commentId: string) => {
     try {
       const token = await getToken();
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/forum/comments/${commentId}/like`, {
+      const response = await fetch(`${API_BASE_URL}/forum/comments/${commentId}/like`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -224,7 +225,7 @@ const ForumNew: React.FC = () => {
 
     try {
       const token = await getToken();
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/forum/posts/${postId}/flag`, {
+      await fetch(`${API_BASE_URL}/forum/posts/${postId}/flag`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

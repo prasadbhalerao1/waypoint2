@@ -7,7 +7,7 @@ import cors from 'cors';
 
 const allowedOrigins = process.env.FRONTEND_ORIGIN 
   ? process.env.FRONTEND_ORIGIN.split(',').map(origin => origin.trim())
-  : ['http://localhost:5173'];
+  : ['http://localhost:5173', 'https://waypoint-demo-two.vercel.app', 'https://waypoint-demo-backend.vercel.app'];
 
 const corsOptions = {
   origin: (origin, callback) => {
