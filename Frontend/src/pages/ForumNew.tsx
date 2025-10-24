@@ -89,7 +89,9 @@ const ForumNew: React.FC = () => {
         ? `${API_BASE_URL}/forum/posts`
         : `${API_BASE_URL}/forum/posts?category=${selectedCategory}`;
       
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        credentials: 'include'
+      });
       const data = await response.json();
       setPosts(data.posts || []);
     } catch (error) {
@@ -101,7 +103,9 @@ const ForumNew: React.FC = () => {
 
   const loadPostWithComments = async (postId: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}`);
+      const response = await fetch(`${API_BASE_URL}/forum/posts/${postId}`, {
+        credentials: 'include'
+      });
       const data = await response.json();
       setSelectedPost(data.post);
       setComments(data.comments || []);
@@ -121,6 +125,7 @@ const ForumNew: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
+        credentials: 'include',
         body: JSON.stringify({
           ...newPost,
           tags: newPost.tags.split(',').map(t => t.trim()).filter(t => t)
@@ -150,6 +155,7 @@ const ForumNew: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
+        credentials: 'include',
         body: JSON.stringify(newComment)
       });
 
@@ -169,7 +175,8 @@ const ForumNew: React.FC = () => {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -203,7 +210,8 @@ const ForumNew: React.FC = () => {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -231,6 +239,7 @@ const ForumNew: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
+        credentials: 'include',
         body: JSON.stringify({ reason })
       });
       

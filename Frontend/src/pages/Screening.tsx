@@ -40,7 +40,9 @@ const Screening: React.FC = () => {
 
   const loadScreening = async (type: 'PHQ-9' | 'GAD-7') => {
     try {
-      const response = await fetch(`${API_BASE_URL}/screening/questions?type=${type}`);
+      const response = await fetch(`${API_BASE_URL}/screening/questions?type=${type}`, {
+        credentials: 'include'
+      });
       const data = await response.json();
       setScreeningData(data);
       setResponses(new Array(data.questions.length).fill(-1));
@@ -81,6 +83,7 @@ const Screening: React.FC = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
+        credentials: 'include',
         body: JSON.stringify({
           type: selectedType,
           responses: formattedResponses
@@ -103,7 +106,8 @@ const Screening: React.FC = () => {
       const response = await fetch(`${API_BASE_URL}/screening/history`, {
         headers: {
           'Authorization': `Bearer ${token}`
-        }
+        },
+        credentials: 'include'
       });
       const data = await response.json();
       setHistory(data.screenings || []);

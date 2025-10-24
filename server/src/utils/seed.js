@@ -5,14 +5,13 @@
  */
 
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import User from '../models/User.js';
 import Resource from '../models/Resource.js';
 import ForumPost from '../models/ForumPost.js';
 import Booking from '../models/Booking.js';
 import connectDB from '../config/db.js';
 
-dotenv.config();
+// Environment variables are loaded via package.json script
 
 // Demo data
 const demoUsers = [

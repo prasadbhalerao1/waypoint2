@@ -69,6 +69,7 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ email, phone, otp })
     });
     return response.json();
@@ -87,6 +88,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token ?? ''}`
       },
+      credentials: 'include',
       body: JSON.stringify({ theme })
     });
     return response.json();
@@ -104,6 +106,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token ?? ''}`
       },
+      credentials: 'include',
       body: JSON.stringify({ mood })
     });
     return response.json();
@@ -143,6 +146,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token ?? ''}`
       },
+      credentials: 'include',
       body: JSON.stringify({ message, theme, mood })
     });
     return response.json();
@@ -164,6 +168,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token ?? ''}`
       },
+      credentials: 'include',
       body: JSON.stringify({ exercise_id: exerciseId, start_ts: startTs, end_ts: endTs, duration })
     });
     return response.json();
@@ -185,6 +190,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token ?? ''}`
       },
+      credentials: 'include',
       body: JSON.stringify({ counsellor_id: counsellorId, slot, share_context: shareContext })
     });
     return response.json();
@@ -205,6 +211,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token ?? ''}`
       },
+      credentials: 'include',
       body: JSON.stringify({ student_id: studentId, locale, summary })
     });
     return response.json();
@@ -226,7 +233,8 @@ export const api = {
       method: 'GET',
       headers: { 
         'Authorization': `Bearer ${token ?? ''}`
-      }
+      },
+      credentials: 'include'
     });
     return response.json();
   },
@@ -238,7 +246,8 @@ export const api = {
       headers: { 
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token ?? ''}`
-      }
+      },
+      credentials: 'include'
     });
     return response.json();
   },
@@ -250,6 +259,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token ?? ''}`
       },
+      credentials: 'include',
       body: JSON.stringify({ sessionId, answer, conversationHistory })
     });
     return response.json();

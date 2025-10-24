@@ -7,7 +7,6 @@
 import express from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import corsMiddleware from './middleware/cors.js';
 import errorHandler from './middleware/errorHandler.js';
@@ -23,8 +22,8 @@ import adminRoutes from './routes/admin.js';
 import screeningRoutes from './routes/screening.js';
 import quickCheckRoutes from './routes/quickCheck.js';
 
-// Load environment variables
-dotenv.config();
+// Environment variables are loaded via package.json script:
+// node -r dotenv/config src/index.js dotenv_config_path=.env.development
 
 // Connect to MongoDB
 connectDB();
