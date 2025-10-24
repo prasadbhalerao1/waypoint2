@@ -34,7 +34,7 @@ const MusicTherapy: React.FC = () => {
       const resource = musicResources.find(r => r.id === resourceId);
       if (resource) {
         // Temporarily use calm_focus_loop.mp3 for all tracks
-        audio.src = '/assets/calm_focus_loop.mp3';
+        audio.src = '/calm_focus_loop.mp3';
         audio.play()
           .then(() => {
             setIsPlaying(resourceId);

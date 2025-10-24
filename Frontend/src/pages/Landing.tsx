@@ -49,7 +49,7 @@ const Landing: React.FC = () => {
   return (
     <div className="min-h-screen">
       {/* Autoplay relaxing music after 3 cards are done */}
-      <audio ref={audioRef} src="/assets/calm_focus_loop.mp3" preload="auto" />
+      <audio ref={audioRef} src="/calm_focus_loop.mp3" preload="auto" />
       {/* Hero Section */}
       <section className="px-8 py-16 lg:py-24">
         <div className="max-w-6xl mx-auto text-center">
