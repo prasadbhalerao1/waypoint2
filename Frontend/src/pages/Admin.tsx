@@ -40,18 +40,15 @@ const Admin: React.FC = () => {
   ]);
 
   useEffect(() => {
-    // Simulate loading admin stats
-    const timer = setTimeout(() => {
-      setStats({
-        dau: 1247,
-        weeklyScreenings: 89,
-        flaggedPercentage: 12.3,
-        avgStreak: 4.2,
-        meanMood: 3.4
-      });
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    // HARDCODED TEMPORARY DATA for demo purposes
+    // TODO: Replace with actual API call once backend is fully connected
+    setStats({
+      dau: 1247,
+      weeklyScreenings: 89,
+      flaggedPercentage: 12.3,
+      avgStreak: 4.2,
+      meanMood: 3.4
+    });
   }, []);
 
   const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; color: string }> = 
