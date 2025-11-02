@@ -11,21 +11,32 @@ const Landing: React.FC = () => {
   const [showMoodUpdate, setShowMoodUpdate] = useState(false);
 
   useEffect(() => {
-    // Check if the user just completed onboarding
-    const hasJustOnboarded = localStorage.getItem('waypoint-onboarded') === 'true';
-    const musicStarted = localStorage.getItem('waypoint-music-started') === 'true';
+    // Only play if onboarding is complete
+    const hasOnboarded = localStorage.getItem('waypoint-onboarded') === 'true';
+    
+    if (!hasOnboarded) {
+      return; // Don't play music if user hasn't onboarded yet
+    }
 
-    if (hasJustOnboarded && !musicStarted && audioRef.current) {
-      audioRef.current.loop = true; // Make the music loop continuously
-      audioRef.current.volume = 0.3; // Set a comfortable volume level
-      audioRef.current.play()
-        .then(() => {
-          localStorage.setItem('waypoint-music-started', 'true');
-        })
+    // Play background music on home page and resume from where it paused
+    const audio = audioRef.current;
+    if (audio) {
+      audio.loop = true; // Make the music loop continuously
+      audio.volume = 0.3; // Set a comfortable volume level
+      
+      // Resume playback from where it paused, or start fresh
+      audio.play()
         .catch((error) => {
-          console.error('Error playing audio:', error);
+          console.error('Error playing background music:', error);
         });
     }
+
+    // Cleanup: pause when component unmounts (user navigates away)
+    return () => {
+      if (audio && !audio.paused) {
+        audio.pause(); // Pause but don't reset position
+      }
+    };
   }, []);
 
   const features = [

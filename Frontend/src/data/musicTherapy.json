@@ -13,7 +13,11 @@
         "Reduced anxiety",
         "Enhanced productivity"
       ],
-      "recommended": ["Study sessions", "Work periods", "Reading"]
+      "recommended": [
+        "Study sessions",
+        "Work periods",
+        "Reading"
+      ]
     },
     {
       "id": "meditation",
@@ -28,13 +32,17 @@
         "Stress reduction",
         "Mental clarity"
       ],
-      "recommended": ["Morning meditation", "Mindfulness practice", "Stress relief"]
+      "recommended": [
+        "Morning meditation",
+        "Mindfulness practice",
+        "Stress relief"
+      ]
     },
     {
       "id": "stress-relief",
       "title": "Stress Relief",
       "description": "Natural sounds combined with gentle melodies to help reduce stress.",
-      "audioFile": "stress_relief.mp3",
+      "audioFile": "stress-relief.mp3",
       "duration": "3:00",
       "category": "Relaxation",
       "emoji": "🌊",
@@ -43,7 +51,11 @@
         "Emotional balance",
         "Better sleep quality"
       ],
-      "recommended": ["Before sleep", "After work", "During breaks"]
+      "recommended": [
+        "Before sleep",
+        "After work",
+        "During breaks"
+      ]
     },
     {
       "id": "healing-sounds",
@@ -58,7 +70,11 @@
         "Energy balancing",
         "Holistic wellness"
       ],
-      "recommended": ["Healing sessions", "Yoga practice", "Quiet moments"]
+      "recommended": [
+        "Healing sessions",
+        "Yoga practice",
+        "Quiet moments"
+      ]
     }
   ],
   "categories": [
