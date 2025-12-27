@@ -46,13 +46,7 @@ You can check out the current demo at :-
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: Clerk JWT validation
 - **AI Integration**: OpenAI API / Google Gemini
-- **Security**: Helmet, CORS, Rate Limiting, AES-256 encryption
-
-### DevOps & Deployment
-- **Containerization**: Docker + Docker Compose
-- **Frontend Hosting**: Vercel
-- **Backend Hosting**: Render / Railway
-- **Version Control**: Git + GitHub
+- **Security**: Helmet, CORS, Rate Limiting
 
 ## 📁 Project Structure
 
