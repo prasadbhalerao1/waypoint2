@@ -110,3 +110,6 @@ dist
 # OS
 .DS_Store
 Thumbs.db
+
+# For devs
+FEATURES.md
