@@ -7,6 +7,7 @@ import { Router } from 'express';
 import { requireAuth } from '@clerk/express';
 import {
   createBooking,
+  requestMatch,
   getBookings,
   getBookingById,
   updateBooking,
@@ -20,6 +21,9 @@ router.use(requireAuth());
 
 // GET /api/v1/bookings/counsellors/available - Get available counsellors
 router.get('/counsellors/available', getAvailableCounsellors);
+
+// POST /api/v1/bookings/match - Instant match request
+router.post('/match', requestMatch);
 
 // POST /api/v1/bookings - Create booking
 router.post('/', createBooking);

@@ -27,7 +27,9 @@ const Landing: React.FC = () => {
       // Resume playback from where it paused, or start fresh
       audio.play()
         .catch((error) => {
-          console.error('Error playing background music:', error);
+          if (error.name !== 'AbortError') {
+            console.warn('Background music playback blocked:', error.message);
+          }
         });
     }
 

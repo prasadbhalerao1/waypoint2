@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '@clerk/clerk-react';
 import { 
@@ -39,7 +38,6 @@ interface Comment {
 
 const ForumNew: React.FC = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://waypoint-backend.vercel.app/api/v1';
-  const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const { getToken, userId } = useAuth();
   
@@ -78,11 +76,7 @@ const ForumNew: React.FC = () => {
     { value: 'questions', label: 'Questions', icon: '❓' }
   ];
 
-  useEffect(() => {
-    loadPosts();
-  }, [selectedCategory]);
-
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     setIsLoading(true);
     try {
       const url = selectedCategory === 'all' 
@@ -99,7 +93,11 @@ const ForumNew: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [API_BASE_URL, selectedCategory]);
+
+  useEffect(() => {
+    loadPosts();
+  }, [loadPosts]);
 
   const loadPostWithComments = async (postId: string) => {
     try {

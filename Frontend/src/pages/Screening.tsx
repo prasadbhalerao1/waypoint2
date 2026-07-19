@@ -1,13 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApi } from '../hooks/useApi';
 import { ClipboardList, TrendingUp, AlertCircle, CheckCircle, Phone } from 'lucide-react';
-
-interface ScreeningQuestion {
-  question: string;
-  score: number;
-}
 
 interface ScreeningData {
   type: string;
@@ -17,8 +12,23 @@ interface ScreeningData {
   options: { value: number; label: string }[];
 }
 
+interface ScreeningResult {
+  score?: number;
+  maxScore?: number;
+  severity?: string;
+  interpretation?: string;
+  recommendations?: string[];
+}
+
+interface ScreeningHistoryItem {
+  _id?: string;
+  type: string;
+  totalScore: number;
+  severity: string;
+  createdAt: string;
+}
+
 const Screening: React.FC = () => {
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://waypoint-backend.vercel.app/api/v1';
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const api = useApi();
@@ -28,22 +38,13 @@ const Screening: React.FC = () => {
   const [responses, setResponses] = useState<number[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<ScreeningResult | null>(null);
   const [showHistory, setShowHistory] = useState(false);
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<ScreeningHistoryItem[]>([]);
 
-  useEffect(() => {
-    if (selectedType) {
-      loadScreening(selectedType);
-    }
-  }, [selectedType]);
-
-  const loadScreening = async (type: 'PHQ-9' | 'GAD-7') => {
+  const loadScreening = useCallback(async (type: 'PHQ-9' | 'GAD-7') => {
     try {
-      const response = await fetch(`${API_BASE_URL}/screening/questions?type=${type}`, {
-        credentials: 'include'
-      });
-      const data = await response.json();
+      const data = await api.getQuestions(type);
       setScreeningData(data);
       setResponses(new Array(data.questions.length).fill(-1));
       setCurrentQuestion(0);
@@ -51,7 +52,13 @@ const Screening: React.FC = () => {
     } catch (error) {
       console.error('Failed to load screening:', error);
     }
-  };
+  }, [api]);
+
+  useEffect(() => {
+    if (selectedType) {
+      loadScreening(selectedType);
+    }
+  }, [selectedType, loadScreening]);
 
   const handleResponse = (score: number) => {
     const newResponses = [...responses];
@@ -76,21 +83,7 @@ const Screening: React.FC = () => {
         score
       }));
 
-      const token = await (api as any).getToken?.() ?? undefined;
-      const response = await fetch(`${API_BASE_URL}/screening`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          type: selectedType,
-          responses: formattedResponses
-        })
-      });
-
-      const data = await response.json();
+      const data = await api.submitScreening(selectedType!, formattedResponses);
       setResult(data);
     } catch (error) {
       console.error('Failed to submit screening:', error);
@@ -102,14 +95,7 @@ const Screening: React.FC = () => {
 
   const loadHistory = async () => {
     try {
-      const token = await (api as any).getToken?.() ?? undefined;
-      const response = await fetch(`${API_BASE_URL}/screening/history`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include'
-      });
-      const data = await response.json();
+      const data = await api.getScreeningHistory();
       setHistory(data.screenings || []);
       setShowHistory(true);
     } catch (error) {

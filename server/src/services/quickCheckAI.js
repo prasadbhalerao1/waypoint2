@@ -9,7 +9,7 @@ import OpenAI from 'openai';
 const AI_PROVIDER = process.env.AI_PROVIDER || 'gemini';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const AI_MODEL = process.env.AI_MODEL || (AI_PROVIDER === 'gemini' ? 'gemini-2.0-flash-exp' : 'gpt-4o-mini');
+const AI_MODEL = process.env.AI_MODEL || (AI_PROVIDER === 'gemini' ? 'gemini-2.5-flash' : 'gpt-4o-mini');
 
 let geminiClient = null;
 let openaiClient = null;

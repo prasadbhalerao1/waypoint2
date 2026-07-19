@@ -25,7 +25,7 @@ const SignInPage: React.FC = () => {
         routing="path"
         path="/sign-in"
         signUpUrl="/sign-up"
-        afterSignInUrl="/onboarding"
+        fallbackRedirectUrl="/onboarding"
       />
     </div>
   );

@@ -184,7 +184,7 @@ const MarkdownMessage: React.FC<MarkdownMessageProps> = ({ content, className = 
     // Find all italic matches (avoid overlap with bold)
     while ((match = italicRegex.exec(text)) !== null) {
       // Check if this is not part of a bold marker
-      if (!text.slice(Math.max(0, match.index - 1), match.index + match[0].length + 1).match(/\*\*|\__/)) {
+      if (!text.slice(Math.max(0, match.index - 1), match.index + match[0].length + 1).match(/\*\*|__/)) {
         allMatches.push({
           index: match.index,
           length: match[0].length,

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Play, Pause, ArrowLeft, ArrowRight, Volume2 } from 'lucide-react';
 
@@ -78,11 +78,16 @@ const TaskCard: React.FC<TaskCardProps> = ({ type, onComplete, onBack }) => {
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = useCallback(() => {
     const points = type === 'journaling' ? 20 : type === 'grounding' ? 15 : 10;
     addProgress(points);
     onComplete();
-  };
+  }, [type, addProgress, onComplete]);
+
+  const handleTrackEnd = useCallback(() => {
+    setIsPlaying(false);
+    handleComplete();
+  }, [handleComplete]);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -95,21 +100,15 @@ const TaskCard: React.FC<TaskCardProps> = ({ type, onComplete, onBack }) => {
     }
   };
 
-  const handleTrackEnd = () => {
-    setIsPlaying(false);
-    handleComplete();
-  };
-
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.addEventListener('ended', handleTrackEnd);
+    const audioEl = audioRef.current;
+    if (audioEl) {
+      audioEl.addEventListener('ended', handleTrackEnd);
       return () => {
-        if (audioRef.current) {
-          audioRef.current.removeEventListener('ended', handleTrackEnd);
-        }
+        audioEl.removeEventListener('ended', handleTrackEnd);
       };
     }
-  }, []);
+  }, [handleTrackEnd]);
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 max-w-md mx-auto border-l-4" 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApi } from '../hooks/useApi';
@@ -42,11 +42,7 @@ const Chat: React.FC = () => {
     }
   }, [messages]);
 
-  useEffect(() => {
-    loadInitialMessage();
-  }, []);
-
-  const loadInitialMessage = async () => {
+  const loadInitialMessage = useCallback(async () => {
     try {
       // Create initial message based on theme and mood
       const moodLabels = ['Overwhelmed', 'Struggling', 'Okay', 'Good', 'Great'];
@@ -81,7 +77,7 @@ const Chat: React.FC = () => {
       
       setMessages([initialMessage]);
       isInitialLoad.current = false; // Mark initial load as complete
-    } catch (error) {
+    } catch {
       // Fallback to basic greeting if theme-specific message fails
       const fallbackMessage: Message = {
         id: 'initial',
@@ -94,7 +90,11 @@ const Chat: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentTheme.id, mood]);
+
+  useEffect(() => {
+    loadInitialMessage();
+  }, [loadInitialMessage]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -162,7 +162,7 @@ const Chat: React.FC = () => {
 
   const handleAction = (action: string) => {
     switch (action) {
-      case 'exercises':
+      case 'exercises': {
         const exerciseMessage: Message = {
           id: Date.now().toString(),
           text: "Here are some exercises that might help. Choose one to begin:",
@@ -172,6 +172,7 @@ const Chat: React.FC = () => {
         };
         setMessages(prev => [...prev, exerciseMessage]);
         break;
+      }
       case 'breathing':
       case 'grounding':
       case 'journaling':
@@ -204,7 +205,9 @@ const Chat: React.FC = () => {
 
     setMessages(prev => [...prev, aiMessage]);
     setShowTaskCard(null);
-  };  const handleTaskBack = () => {
+  };
+
+  const handleTaskBack = () => {
     setShowTaskCard(null);
   };
 
@@ -277,7 +280,7 @@ const Chat: React.FC = () => {
         {showTaskCard ? (
           <div className="mb-6">
             <TaskCard
-              type={showTaskCard as any}
+              type={showTaskCard as 'breathing' | 'grounding' | 'journaling' | 'music'}
               onComplete={handleTaskComplete}
               onBack={handleTaskBack}
             />

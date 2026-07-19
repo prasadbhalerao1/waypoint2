@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Send, CheckCircle, AlertCircle, Heart, Phone } from 'lucide-react';
 import { useApi } from '../hooks/useApi';
 import { useTheme } from '../contexts/ThemeContext';
@@ -38,13 +38,7 @@ const QuickCheckModal: React.FC<QuickCheckModalProps> = ({ isOpen, onClose }) =>
   const [result, setResult] = useState<QuickCheckResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen && !sessionId) {
-      startQuickCheck();
-    }
-  }, [isOpen]);
-
-  const startQuickCheck = async () => {
+  const startQuickCheck = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -58,7 +52,13 @@ const QuickCheckModal: React.FC<QuickCheckModalProps> = ({ isOpen, onClose }) =>
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [api]);
+
+  useEffect(() => {
+    if (isOpen && !sessionId) {
+      startQuickCheck();
+    }
+  }, [isOpen, sessionId, startQuickCheck]);
 
   const handleSubmitAnswer = async () => {
     if (!userAnswer.trim() || !sessionId) return;

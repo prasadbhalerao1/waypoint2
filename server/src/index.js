@@ -43,13 +43,13 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Clerk authentication middleware
 app.use(clerkMiddleware({
   secretKey: process.env.CLERK_SECRET_KEY,
-  publishableKey: process.env.CLERK_FRONTEND_API
+  publishableKey: process.env.CLERK_PUBLISHABLE_KEY || process.env.CLERK_FRONTEND_API
 }));
 
-// Rate limiting - protect against abuse
+// Rate limiting - protect against abuse (higher limit in development)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 100 : 2000, // 2000 requests per 15 min in dev
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,

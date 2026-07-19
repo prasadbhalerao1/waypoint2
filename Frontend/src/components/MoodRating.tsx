@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import moodMapData from '../data/moodMap.json';
 
 interface MoodRatingProps {
   onComplete: () => void;

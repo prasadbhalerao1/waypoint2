@@ -4,9 +4,9 @@
 
 WayPoint bridges the gap in college mental health support with AI-guided assistance, confidential counseling booking, peer support forums, and comprehensive wellness resources - all designed specifically for Indian college students.
 
-You can check out the current demo at :-
+Demo Site: [`https://waypoint-demo-two.vercel.app`](https://waypoint-demo-two.vercel.app)
 
-[`https://waypoint-demo-two.vercel.app`](https://waypoint-demo-two.vercel.app)
+---
 
 ## 🎯 Core Features
 
@@ -30,200 +30,132 @@ You can check out the current demo at :-
 - **🚨 Proactive Alerts** - Automated trend detection for early intervention
 - **👥 Counselor Management** - Verify and manage mental health professionals on the platform
 
+---
+
 ## 🛠️ Tech Stack
 
 ### Frontend
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite
 - **Styling**: TailwindCSS + shadcn/ui components
-- **Authentication**: Clerk
+- **Authentication**: Clerk (`@clerk/clerk-react`)
 - **State Management**: React Context API
 - **Routing**: React Router v6
+- **HTTP Client**: Native browser `fetch` API wrapped with Clerk JWT tokens
 
 ### Backend
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: Clerk JWT validation
+- **Authentication**: Clerk JWT validation (`@clerk/express`)
 - **AI Integration**: OpenAI API / Google Gemini
 - **Security**: Helmet, CORS, Rate Limiting
+
+---
+
+## 🌐 HTTP Communication Strategy & Endpoint Mapping
+
+- **HTTP Request Layer**: Uses standard native **`fetch` API** across all frontend services and hooks (`useApi.ts` & `mockApi.ts`).
+- **Authentication**: Integrates with **Clerk Auth**, automatically injecting session JWT tokens via HTTP headers:
+  ```http
+  Authorization: Bearer <clerk_jwt_token>
+  Content-Type: application/json
+  ```
+  with `credentials: 'include'` for CORS policy compliance.
+- **Resilient Fallback Mode**: If backend services or database connections are unavailable, the frontend gracefully falls back to structured local mock data without breaking user flows.
+
+### Endpoint Mapping Table
+
+Every backend module in `server/src/routes/` is fully backed by corresponding frontend hooks (`useApi.ts`), API adapters (`mockApi.ts`), and interactive UI pages:
+
+| Backend Domain | Express Routes (`/api/v1`) | Frontend Page / Component | Key Functionality |
+| :--- | :--- | :--- | :--- |
+| **User & Profile** | `/user/me`<br>`/user/me/theme`<br>`/user/me/mood`<br>`/user/me/consent`<br>`/user/me/complete-onboarding`<br>`/user/me/stats` | `Onboarding.tsx`<br>`ThemeSelector.tsx`<br>`MoodRating.tsx`<br>`Navbar.tsx` | Profile management, privacy consent tracking, runtime CSS theme selection, mood logs, and gamification XP stats. |
+| **AI Assistant Chat** | `/chat`<br>`/chat/history` | `Chat.tsx`<br>`MarkdownMessage.tsx`<br>`TaskCard.tsx` | RAG-assisted CBT chat guidance, crisis keyword escalation, PII redaction, exercise triggers, and history management. |
+| **Counsellor Bookings** | `/bookings`<br>`/bookings/counsellors/available`<br>`/bookings/match`<br>`/bookings/:id` | `Booking.tsx`<br>`BookingModal.tsx` | Counsellor discovery, instant AI matching, appointment scheduling, encrypted session notes, and email confirmation. |
+| **Wellness Resources** | `/resources`<br>`/resources/:id`<br>`/resources/:id/complete` | `Resources.tsx`<br>`ResourceCard.tsx` | Categorized mental health guides, search & tag filtering, external resource launching, and completion XP rewards. |
+| **Peer Support Forum** | `/forum/posts`<br>`/forum/posts/:id`<br>`/forum/posts/:id/comments`<br>`/forum/posts/:id/like`<br>`/forum/comments/:id/like`<br>`/forum/posts/:id/flag` | `ForumNew.tsx` | Anonymous & public peer discussion threads, nested comment trees, post/comment liking, and community flagging. |
+| **Admin & Moderation** | `/admin/analytics`<br>`/admin/alerts`<br>`/admin/counsellors`<br>`/admin/counsellors/:id/verify`<br>`/admin/flagged-posts`<br>`/admin/posts/:id/moderate` | `Admin.tsx`<br>`ProtectedAdminRoute.tsx` | Anonymized DAU & mood analytics, early-warning system alerts, counsellor credential verification, and post moderation. |
+| **Mental Screening** | `/screening/questions`<br>`/screening`<br>`/screening/history` | `Screening.tsx` | Standardized PHQ-9 (depression) & GAD-7 (anxiety) assessments with instant score calculation, risk level analysis, and history. |
+| **Adaptive Quick Check** | `/quick-check/start`<br>`/quick-check/answer`<br>`/quick-check/history` | `QuickCheckModal.tsx` | AI-powered multi-turn conversational check-in generating adaptive follow-up questions and structured risk assessments. |
+
+---
 
 ## 📁 Project Structure
 
 ```
-Waypointdemo2/
-├── Frontend/              # React TypeScript client
+Waypoint/
+├── Frontend/              # React 18 TypeScript client (Vite)
 │   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/         # Route-level components
-│   │   ├── contexts/      # React Context providers
-│   │   ├── hooks/         # Custom React hooks
-│   │   ├── data/          # Static JSON data
-│   │   └── mockApi.ts     # API adapter (mock/real backend)
+│   │   ├── components/    # Reusable UI components & modals
+│   │   ├── pages/         # Route-level application pages
+│   │   ├── contexts/      # Theme & global state providers
+│   │   ├── hooks/         # Custom React hooks (useApi, useAdmin)
+│   │   ├── data/          # Structured JSON data & themes
+│   │   └── mockApi.ts     # Primary HTTP request & fallback layer
 │   └── README.md
 │
-├── server/                # Node.js Express API
+├── server/                # Node.js + Express REST backend
 │   ├── src/
-│   │   ├── chat/          # AI prompt templates
-│   │   ├── config/        # Database & config
-│   │   ├── controllers/   # Request handlers
-│   │   ├── models/        # Mongoose schemas
-│   │   ├── routes/        # Express routes
-│   │   ├── services/      # Business logic
-│   │   ├── middleware/    # Auth, CORS, errors
-│   │   ├── utils/         # Helpers & utilities
-│   │   └── index.js       # Server entry point
+│   │   ├── chat/          # Prompt templates & context builders
+│   │   ├── config/        # Database & environment setup
+│   │   ├── controllers/   # Express request handlers
+│   │   ├── models/        # Mongoose data models
+│   │   ├── routes/        # Express API endpoints
+│   │   ├── services/      # AI service (OpenAI / Gemini integration)
+│   │   ├── middleware/    # Auth, Admin guard, CORS & Error handling
+│   │   └── index.js       # Express server entry point
 │   └── README.md
 │
-├── README.md              # This file
-└── FEATURES.md            # Detailed feature documentation
+└── README.md              # Root project documentation
 ```
 
-Every folder contains its own `README.md` explaining the code's purpose.
+---
 
-## 🚀 Quick Start
+## 🚀 Quick Start & Development
 
-### Prerequisites
+### 1. Prerequisites
 - Node.js 18+ and npm
 - MongoDB instance (local or Atlas)
 - Clerk account (for authentication)
 - OpenAI API key or Google Gemini API key
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/waypointdemo2.git
-   cd waypointdemo2
-   ```
-
-2. **Install dependencies**
-   ```bash
-   # Install frontend dependencies
-   cd Frontend
-   npm install
-   
-   # Install backend dependencies
-   cd ../server
-   npm install
-   ```
-
-3. **Configure environment variables**
-   
-   Environment files are pre-configured for both development and production:
-   
-   **Frontend**:
-   - `.env.development` - Already configured for local development
-   - `.env.production` - Already configured for Vercel deployment
-   - Update `.env.development` if needed (default: `http://localhost:4000/api/v1`)
-   
-   **Backend**:
-   - `.env.development` - Already configured for local development
-   - `.env.production` - Already configured for production deployment
-   - Add your API keys to `.env.development`:
-     ```env
-     MONGODB_URI=your_mongodb_connection_string
-     CLERK_SECRET_KEY=your_clerk_secret_key
-     GEMINI_API_KEY=your_gemini_api_key
-     ENCRYPTION_KEY=your_32_byte_encryption_key
-     ```
-   
-   See `DEPLOYMENT_GUIDE.md` for complete configuration details.
-
-4. **Run the application**
-   
-   **Terminal 1 - Backend**:
-   ```bash
-   cd server
-   npm run dev
-   ```
-   
-   **Terminal 2 - Frontend**:
-   ```bash
-   cd Frontend
-   npm run dev
-   ```
-
-5. **Access the application**
-   - Frontend: `http://localhost:5173`
-   - Backend API: `http://localhost:4000`
-
-### Docker Deployment
-
+### 2. Installation
 ```bash
-# Build and run with Docker Compose
-docker-compose up --build
-```
+# Clone repository
+git clone https://github.com/yourusername/waypoint.git
+cd waypoint
 
-## 🔒 Security & Privacy
-
-- **Data Minimization**: Only essential data is collected and stored
-- **Encryption**: AES-256 encryption for sensitive fields (screening results, counselor notes)
-- **Authentication**: Clerk-based JWT authentication with session management
-- **Authorization**: Role-based access control (Student, Counselor, Admin)
-- **PII Redaction**: Personal identifiable information is redacted before AI API calls
-- **HTTPS**: All production traffic encrypted in transit
-- **Rate Limiting**: API endpoints protected against abuse
-- **CORS**: Strict origin whitelisting
-
-## 📝 API Documentation
-
-### Base URL
-```
-Production: https://your-api-domain.com/api/v1
-Development: http://localhost:4000/api/v1
-```
-
-### Key Endpoints
-
-| Endpoint | Method | Description | Auth Required |
-|----------|--------|-------------|---------------|
-| `/user/me` | GET | Get current user profile | Yes |
-| `/chat` | POST | Send message to AI assistant | Yes |
-| `/screening` | POST | Submit mental health screening | Yes |
-| `/bookings` | POST | Book counselor appointment | Yes |
-| `/forum` | GET | Get forum posts | Yes |
-| `/resources` | GET | Get mental health resources | No |
-| `/admin/analytics` | GET | Get platform analytics | Admin only |
-
-See `server/src/routes/` for complete API documentation.
-
-## 🧪 Testing
-
-```bash
-# Frontend tests
+# Install Frontend dependencies
 cd Frontend
-npm test
+npm install
 
-# Backend tests
-cd server
-npm test
+# Install Server dependencies
+cd ../server
+npm install
 ```
 
-## 👥 Contributing
+### 3. Run Verification Checks
+```bash
+# Lint check frontend (0 errors, 0 warnings)
+cd Frontend
+npm run lint
 
-We welcome contributions! Please see `CONTRIBUTING.md` for guidelines.
+# TypeScript & Vite build
+npm run build
 
-## 📜 License
+# Syntax check backend server
+cd ../server
+node --check src/index.js
+```
 
-MIT License - see `LICENSE` file for details.
+### 4. Start Development Servers
+```bash
+# Backend Express Server (Port 4000)
+cd server
+npm run dev
 
-## 📧 Contact & Support
-
-For questions, issues, or support:
-- Open an issue on GitHub
-- Email: support@waypoint.edu
-
-## 🌟 Acknowledgments
-
-- Built for **Smart India Hackathon 2025**
-- Inspired by the need for accessible mental health support in Indian educational institutions
-- Special thanks to all contributors and mental health professionals who provided guidance
-
----
-
-**⚠️ Disclaimer**: WayPoint is a support tool and does not replace professional mental health care. If you're experiencing a mental health crisis, please contact emergency services or a crisis helpline immediately.
-
-**India Crisis Helplines**:
-- KIRAN: 1800-599-0019 (24/7, toll-free)
-- Vandrevala Foundation: 1860-2662-345 / 9999 666 555 (24/7)
+# Frontend Client (Port 5173)
+cd Frontend
+npm run dev
+```

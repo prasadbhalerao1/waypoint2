@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ThemeSelector from "../components/ThemeSelector";
 import MoodRating from "../components/MoodRating";
 import { Shield, Database, Users, Check } from "lucide-react";
+import { useApi } from "../hooks/useApi";
 
 const Onboarding: React.FC = () => {
   const [step, setStep] = useState<"consent" | "theme" | "mood">("consent");
@@ -12,6 +13,8 @@ const Onboarding: React.FC = () => {
     counselor: false,
   });
 
+  const api = useApi();
+
   const handleConsentChange = (type: keyof typeof consents) => {
     setConsents((prev) => ({
       ...prev,
@@ -19,8 +22,17 @@ const Onboarding: React.FC = () => {
     }));
   };
 
-  const handleConsentComplete = () => {
+  const handleConsentComplete = async () => {
     localStorage.setItem("waypoint-consents", JSON.stringify(consents));
+    try {
+      await api.updateConsent({
+        screening: consents.screening,
+        analytics: consents.analytics,
+        counsellorSharing: consents.counselor
+      });
+    } catch {
+      // non-blocking
+    }
     setStep("theme");
   };
 
@@ -30,14 +42,14 @@ const Onboarding: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const handleMoodComplete = () => {
-    // Set onboarding state
+  const handleMoodComplete = async () => {
     localStorage.setItem("waypoint-onboarded", "true");
-    
-    // Dispatch custom event to notify state change
+    try {
+      await api.completeOnboarding();
+    } catch {
+      // non-blocking
+    }
     window.dispatchEvent(new Event('onboardingComplete'));
-    
-    // Small delay to ensure state is updated before navigation
     setTimeout(() => {
       navigate("/home", { replace: true });
     }, 0);

@@ -1,328 +1,317 @@
-// Mock API for WayPoint - mirrors backend contract
-// Set USE_MOCK_API=true to use this, false to use real backend
+// Mock API & Real Backend Adapter for WayPoint
+// Set USE_MOCK_API=true to force mock data, or false to use real backend with fallback
 
-const USE_MOCK_API = false; // Change to false when backend is available
+const USE_MOCK_API = false;
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://waypoint-backend.vercel.app/api/v1';
 
-// Types
-interface User {
-  id: string;
-  role: string;
-  theme: string;
-}
+// Helper for fetch with JSON error handling
+async function request<T>(endpoint: string, options: RequestInit = {}, token?: string): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string> || {})
+  };
 
-interface AuthResponse {
-  token: string;
-  user: User;
-}
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
-interface ChatResponse {
-  reply: string;
-  actions: string[];
-  sources: string[];
-}
+  const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+    credentials: 'include'
+  });
 
-interface BookingResponse {
-  booking_id: string;
-  status: string;
-}
-
-interface MatchResponse {
-  match_request_id: string;
-  status: string;
-}
-
-interface ExerciseResponse {
-  xp_awarded: number;
-  progress_key: string;
-}
-
-interface AnalyticsResponse {
-  dau: number;
-  screenings: number;
-  flagged_percent: number;
-  phq_avg: number;
-}
-
-// Mock data
-const mockUser: User = {
-  id: 'user_123',
-  role: 'student',
-  theme: 'default'
-};
-
-const mockToken = 'mock_jwt_token_123';
-
-// API functions
-export const api = {
-  // Auth endpoints
-  async signup(email: string, phone: string, otp: string): Promise<AuthResponse> {
-    if (USE_MOCK_API) {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return {
-        token: mockToken,
-        user: mockUser
-      };
+  if (!res.ok) {
+    let errorMessage = `API Error: ${res.status} ${res.statusText}`;
+    try {
+      const text = await res.text();
+      if (text) {
+        try {
+          const errorData = JSON.parse(text);
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          errorMessage = text.substring(0, 100);
+        }
+      }
+    } catch {
+      // ignore stream read error
     }
-    
-    const response = await fetch(`${API_BASE_URL}/auth/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ email, phone, otp })
-    });
-    return response.json();
+    throw new Error(errorMessage);
+  }
+
+  return res.json();
+}
+
+export const api = {
+  // Auth & User
+  async signup(email: string, phone: string, otp: string) {
+    if (USE_MOCK_API) {
+      await new Promise(r => setTimeout(r, 500));
+      return { token: 'mock_jwt', user: { id: 'user_123', role: 'student', theme: 'default' } };
+    }
+    return request<{ token?: string; user?: Record<string, unknown> }>('/auth/signup', { method: 'POST', body: JSON.stringify({ email, phone, otp }) });
   },
 
-  // Theme & Mood endpoints
-  async updateTheme(theme: string, token?: string): Promise<{ theme: string }> {
+  async getCurrentUser(token?: string) {
     if (USE_MOCK_API) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      return { user: { id: 'user_123', role: 'student', theme: 'default', onboardingComplete: true, name: 'Student', email: 'student@example.com' } };
+    }
+    return request<{ user?: { id?: string; clerkId?: string; name?: string; email?: string; role?: string; theme?: string; onboardingComplete?: boolean } }>('/user/me', { method: 'GET' }, token);
+  },
+
+  async updateProfile(updates: Record<string, unknown>, token?: string) {
+    if (USE_MOCK_API) {
+      return { user: { id: 'user_123', ...updates } };
+    }
+    return request<{ user?: Record<string, unknown> }>('/user/me', { method: 'PATCH', body: JSON.stringify(updates) }, token);
+  },
+
+  async updateTheme(theme: string, token?: string) {
+    if (USE_MOCK_API) return { theme };
+    try {
+      return await request<{ theme: string }>('/user/me/theme', { method: 'PATCH', body: JSON.stringify({ theme }) }, token);
+    } catch (err) {
+      console.warn('Backend updateTheme warning, falling back to local:', err);
       return { theme };
     }
-    
-    const response = await fetch(`${API_BASE_URL}/user/me/theme`, {
-      method: 'PATCH',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token ?? ''}`
-      },
-      credentials: 'include',
-      body: JSON.stringify({ theme })
-    });
-    return response.json();
   },
 
-  async updateMood(mood: number, token?: string): Promise<{ mood: number }> {
-    if (USE_MOCK_API) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+  async updateMood(mood: number, token?: string) {
+    if (USE_MOCK_API) return { mood };
+    try {
+      return await request<{ mood: number }>('/user/me/mood', { method: 'PATCH', body: JSON.stringify({ mood }) }, token);
+    } catch (err) {
+      console.warn('Backend updateMood warning, falling back to local:', err);
       return { mood };
     }
-    
-    const response = await fetch(`${API_BASE_URL}/user/me/mood`, {
-      method: 'PATCH',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token ?? ''}`
-      },
-      credentials: 'include',
-      body: JSON.stringify({ mood })
-    });
-    return response.json();
   },
 
-  // Chat endpoint
-  async sendChatMessage(message: string, theme: string, mood: number, token?: string): Promise<ChatResponse> {
-    if (USE_MOCK_API) {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock responses based on mood
-      const responses = {
-        low: {
-          reply: "I understand you're going through a tough time. Let's work together to find some calm. Would you like to try a breathing exercise or book a session with a counselor?",
-          actions: ["playExercise", "bookCounsellor"],
-          sources: ["breathing_exercises", "counsellor_booking"]
-        },
-        medium: {
-          reply: "You're doing okay today. How can I support you? Feel free to explore our resources or chat with me about anything on your mind.",
-          actions: ["exploreResources"],
-          sources: ["wellness_resources"]
-        },
-        high: {
-          reply: "Great to see you're feeling positive today! Let's keep this energy going. What would you like to explore?",
-          actions: ["exploreResources", "shareProgress"],
-          sources: ["wellness_resources", "community_forum"]
-        }
-      };
-
-      const moodCategory = mood <= 2 ? 'low' : mood === 3 ? 'medium' : 'high';
-      return responses[moodCategory];
+  async updateConsent(consents: { screening?: boolean; analytics?: boolean; counsellorSharing?: boolean }, token?: string) {
+    if (USE_MOCK_API) return { consents };
+    try {
+      return await request<{ consents?: Record<string, boolean> }>('/user/me/consent', { method: 'POST', body: JSON.stringify(consents) }, token);
+    } catch (err) {
+      console.warn('Backend updateConsent warning, falling back:', err);
+      return { consents };
     }
-    
-    const response = await fetch(`${API_BASE_URL}/chat`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token ?? ''}`
-      },
-      credentials: 'include',
-      body: JSON.stringify({ message, theme, mood })
-    });
-
-    // Handle non-JSON responses (e.g., Vercel error pages)
-    if (!response.ok) {
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || errorData.message || `API Error: ${response.status}`);
-      } else {
-        const text = await response.text();
-        throw new Error(`Server Error (${response.status}): ${text.substring(0, 100)}`);
-      }
-    }
-
-    return response.json();
   },
 
-  // Exercise endpoint
-  async submitExerciseAttempt(exerciseId: string, startTs: string, endTs: string, duration: number, token?: string): Promise<ExerciseResponse> {
+  async completeOnboarding(token?: string) {
+    if (USE_MOCK_API) return { onboardingComplete: true };
+    try {
+      return await request<{ onboardingComplete?: boolean }>('/user/me/complete-onboarding', { method: 'POST' }, token);
+    } catch (err) {
+      console.warn('Backend completeOnboarding warning, falling back:', err);
+      return { onboardingComplete: true };
+    }
+  },
+
+  async getUserStats(token?: string) {
+    if (USE_MOCK_API) return { xp: 120, level: 2, streak: { current: 3, longest: 5 }, badges: [] };
+    return request<{ xp?: number; level?: number; streak?: { current?: number; longest?: number }; badges?: Record<string, unknown>[] }>('/user/me/stats', { method: 'GET' }, token);
+  },
+
+  // Chat
+  async sendChatMessage(message: string, theme: string, mood: number, token?: string) {
     if (USE_MOCK_API) {
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(r => setTimeout(r, 1000));
       return {
-        xp_awarded: 10,
-        progress_key: "wp_progress_beats"
+        reply: "I'm here to listen and support you. Take a deep breath. Would you like to try a grounding exercise or talk more?",
+        actions: ["exercises", "resources", "quick_check"],
+        sources: ["wellness_resources"]
       };
     }
-    
-    const response = await fetch(`${API_BASE_URL}/exercise/attempt`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token ?? ''}`
-      },
-      credentials: 'include',
-      body: JSON.stringify({ exercise_id: exerciseId, start_ts: startTs, end_ts: endTs, duration })
-    });
-    return response.json();
+    return request<{ reply?: string; actions?: string[]; sources?: string[] }>('/chat', { method: 'POST', body: JSON.stringify({ message, theme, mood }) }, token);
   },
 
-  // Booking endpoints
-  async createBooking(counsellorId: string, slot: string, shareContext: boolean, token?: string): Promise<BookingResponse> {
+  async getChatHistory(limit = 50, skip = 0, token?: string) {
+    if (USE_MOCK_API) return { chats: [], total: 0 };
+    return request<{ chats?: Record<string, unknown>[]; total?: number }>(`/chat/history?limit=${limit}&skip=${skip}`, { method: 'GET' }, token);
+  },
+
+  async deleteChatHistory(token?: string) {
+    if (USE_MOCK_API) return { message: 'Chat history deleted', deletedCount: 0 };
+    return request<{ message?: string; deletedCount?: number }>('/chat/history', { method: 'DELETE' }, token);
+  },
+
+  // Bookings
+  async getAvailableCounsellors(specialization?: string, language?: string, token?: string) {
     if (USE_MOCK_API) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
       return {
-        booking_id: `booking_${Date.now()}`,
-        status: "confirmed"
+        counsellors: [
+          { clerkId: 'c1', name: 'Dr. Sarah Sharma', email: 'sarah@waypoint.org', counsellorProfile: { specializations: ['Anxiety', 'Academic Stress'], averageRating: 4.9, bio: 'Experienced campus counselor.' } },
+          { clerkId: 'c2', name: 'Dr. Rajesh Patel', email: 'rajesh@waypoint.org', counsellorProfile: { specializations: ['Depression', 'Relationships'], averageRating: 4.8, bio: 'Student wellbeing specialist.' } }
+        ]
       };
     }
-    
-    const response = await fetch(`${API_BASE_URL}/bookings`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token ?? ''}`
-      },
-      credentials: 'include',
-      body: JSON.stringify({ counsellor_id: counsellorId, slot, share_context: shareContext })
-    });
-    return response.json();
+    const params = new URLSearchParams();
+    if (specialization) params.append('specialization', specialization);
+    if (language) params.append('language', language);
+    const queryStr = params.toString() ? `?${params.toString()}` : '';
+    return request<{ counsellors?: Array<{ clerkId: string; name: string; email: string; counsellorProfile?: { specializations?: string[]; averageRating?: number; bio?: string; verified?: boolean } }> }>(`/bookings/counsellors/available${queryStr}`, { method: 'GET' }, token);
   },
 
-  async requestMatch(studentId: string, locale: string, summary: string, token?: string): Promise<MatchResponse> {
+  async createBooking(bookingData: { counsellorId?: string; start: string; end: string; consentGiven: boolean; studentEmail: string; studentName?: string; reason?: string }, token?: string) {
     if (USE_MOCK_API) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return {
-        match_request_id: `match_${Date.now()}`,
-        status: "searching"
-      };
+      await new Promise(r => setTimeout(r, 800));
+      return { booking_id: `booking_${Date.now()}`, status: 'confirmed', message: 'Booking confirmed successfully.' };
     }
-    
-    const response = await fetch(`${API_BASE_URL}/bookings/match`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token ?? ''}`
-      },
-      credentials: 'include',
-      body: JSON.stringify({ student_id: studentId, locale, summary })
-    });
-    return response.json();
+    return request<{ booking_id?: string; id?: string; status?: string; message?: string }>('/bookings', { method: 'POST', body: JSON.stringify(bookingData) }, token);
   },
 
-  // Admin analytics endpoint
-  async getAnalytics(from: string, to: string, token?: string): Promise<AnalyticsResponse> {
+  async requestMatch(studentId: string, locale: string, summary: string, token?: string) {
     if (USE_MOCK_API) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      return { match_request_id: `match_${Date.now()}`, status: 'searching' };
+    }
+    return request<{ match_request_id?: string; status?: string; counsellor?: Record<string, unknown> }>('/bookings/match', { method: 'POST', body: JSON.stringify({ studentId, locale, summary }) }, token);
+  },
+
+  async getBookings(token?: string) {
+    if (USE_MOCK_API) return { bookings: [] };
+    return request<{ bookings?: Record<string, unknown>[] }>('/bookings', { method: 'GET' }, token);
+  },
+
+  // Resources
+  async getResources(params: { category?: string; tag?: string; search?: string; page?: number } = {}, token?: string) {
+    if (USE_MOCK_API) return { resources: [], pagination: { total: 0, page: 1, limit: 20, pages: 1 } };
+    const query = new URLSearchParams();
+    if (params.category && params.category !== 'All') query.append('category', params.category);
+    if (params.tag) query.append('tags', params.tag);
+    if (params.search) query.append('q', params.search);
+    if (params.page) query.append('page', params.page.toString());
+    return request<{ resources?: Array<{ id?: number | string; _id?: string; title: string; description: string; type: string; duration?: string; tags?: string[]; color?: string; url?: string }>; pagination?: Record<string, unknown> }>(`/resources?${query.toString()}`, { method: 'GET' }, token);
+  },
+
+  async getResourceById(id: string, token?: string) {
+    return request<Record<string, unknown>>(`/resources/${id}`, { method: 'GET' }, token);
+  },
+
+  async completeResource(id: string, token?: string) {
+    if (USE_MOCK_API) return { message: 'Resource completed', xpAwarded: 10 };
+    return request<{ message?: string; xpAwarded?: number }>(`/resources/${id}/complete`, { method: 'POST' }, token);
+  },
+
+  // Forum
+  async getPosts(category?: string, tags?: string, page = 1, token?: string) {
+    if (USE_MOCK_API) return { posts: [], pagination: { total: 0, page: 1, limit: 20, pages: 1 } };
+    const params = new URLSearchParams();
+    if (category && category !== 'all') params.append('category', category);
+    if (tags) params.append('tags', tags);
+    params.append('page', page.toString());
+    return request<{ posts?: Record<string, unknown>[]; pagination?: Record<string, unknown> }>(`/forum/posts?${params.toString()}`, { method: 'GET' }, token);
+  },
+
+  async getPostById(id: string, token?: string) {
+    return request<Record<string, unknown>>(`/forum/posts/${id}`, { method: 'GET' }, token);
+  },
+
+  async createPost(postData: { title: string; content: string; category?: string; tags?: string[]; anonymous?: boolean }, token?: string) {
+    return request<Record<string, unknown>>('/forum/posts', { method: 'POST', body: JSON.stringify(postData) }, token);
+  },
+
+  async addComment(postId: string, commentData: { content: string; anonymous?: boolean }, token?: string) {
+    return request<Record<string, unknown>>(`/forum/posts/${postId}/comments`, { method: 'POST', body: JSON.stringify(commentData) }, token);
+  },
+
+  async togglePostLike(postId: string, token?: string) {
+    return request<Record<string, unknown>>(`/forum/posts/${postId}/like`, { method: 'POST' }, token);
+  },
+
+  async toggleCommentLike(commentId: string, token?: string) {
+    return request<Record<string, unknown>>(`/forum/comments/${commentId}/like`, { method: 'POST' }, token);
+  },
+
+  async flagPost(postId: string, reason: string, token?: string) {
+    return request<Record<string, unknown>>(`/forum/posts/${postId}/flag`, { method: 'POST', body: JSON.stringify({ reason }) }, token);
+  },
+
+  // Admin
+  async getAnalytics(from?: string, to?: string, token?: string) {
+    if (USE_MOCK_API) {
       return {
-        dau: 123,
-        screenings: 45,
-        flagged_percent: 12,
-        phq_avg: 6.2
+        overview: { totalUsers: 1247, dau: 89, totalBookings: 34, weeklyScreenings: 45, escalationCount: 3, flaggedPosts: 2 },
+        bookingsPerDay: [],
+        avgChatSentiment: 0.72,
+        chatTrend: { data: [] },
+        moodDistribution: [{ _id: 1, count: 5 }, { _id: 3, count: 20 }, { _id: 5, count: 15 }],
+        streaks: { avgCurrent: 4.2, avgLongest: 8.5 },
+        topResources: []
       };
     }
-    
-    const response = await fetch(`${API_BASE_URL}/admin/analytics?from=${from}&to=${to}`, {
-      method: 'GET',
-      headers: { 
-        'Authorization': `Bearer ${token ?? ''}`
-      },
-      credentials: 'include'
-    });
-    return response.json();
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    return request<{
+      overview?: { totalUsers?: number; dau?: number; totalBookings?: number; weeklyScreenings?: number; escalationCount?: number; flaggedPosts?: number };
+      avgChatSentiment?: number;
+      streaks?: { avgCurrent?: number; avgLongest?: number };
+      alerts?: Array<{ id?: string | number; severity?: string; message: string; timestamp?: string }>;
+    }>(`/admin/analytics?${params.toString()}`, { method: 'GET' }, token);
   },
 
-  // Quick Check endpoints
-  async startQuickCheck(token?: string): Promise<{ sessionId: string; question: string; questionNumber: number }> {
-    const response = await fetch(`${API_BASE_URL}/quick-check/start`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token ?? ''}`
-      },
-      credentials: 'include'
-    });
-    return response.json();
+  async getAlerts(token?: string) {
+    if (USE_MOCK_API) return { alerts: [] };
+    return request<{ alerts?: Array<{ id?: string | number; severity?: string; message: string; timestamp?: string }> }>('/admin/alerts', { method: 'GET' }, token);
   },
 
-  async answerQuickCheck(sessionId: string, answer: string, conversationHistory: any[], token?: string): Promise<any> {
-    const response = await fetch(`${API_BASE_URL}/quick-check/answer`, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token ?? ''}`
-      },
-      credentials: 'include',
-      body: JSON.stringify({ sessionId, answer, conversationHistory })
-    });
-    return response.json();
+  async getCounsellors(token?: string) {
+    if (USE_MOCK_API) return { counsellors: [] };
+    return request<{ counsellors?: Record<string, unknown>[] }>('/admin/counsellors', { method: 'GET' }, token);
+  },
+
+  async verifyCounsellor(counsellorId: string, verified: boolean, notes?: string, token?: string) {
+    return request<Record<string, unknown>>(`/admin/counsellors/${counsellorId}/verify`, { method: 'PATCH', body: JSON.stringify({ verified, notes }) }, token);
+  },
+
+  async getFlaggedPosts(token?: string) {
+    return request<{ posts?: Record<string, unknown>[] }>('/admin/flagged-posts', { method: 'GET' }, token);
+  },
+
+  async moderatePost(postId: string, action: 'approve' | 'remove' | 'lock', notes?: string, token?: string) {
+    return request<Record<string, unknown>>(`/admin/posts/${postId}/moderate`, { method: 'PATCH', body: JSON.stringify({ action, notes }) }, token);
+  },
+
+  // Screening
+  async getQuestions(type: 'PHQ-9' | 'GAD-7') {
+    return request<{ type: string; title: string; description: string; questions: string[]; options: Array<{ value: number; label: string }> }>(`/screening/questions?type=${type}`, { method: 'GET' });
+  },
+
+  async submitScreening(type: string, responses: Array<{ question: string; score: number }>, token?: string) {
+    return request<{ score?: number; totalScore?: number; maxScore?: number; severity?: string; interpretation?: string; recommendations?: string[]; suicidalIdeation?: boolean }>('/screening', { method: 'POST', body: JSON.stringify({ type, responses }) }, token);
+  },
+
+  async getScreeningHistory(token?: string) {
+    return request<{ screenings?: Array<{ _id?: string; type: string; totalScore: number; severity: string; createdAt: string }> }>('/screening/history', { method: 'GET' }, token);
+  },
+
+  // Quick Check
+  async startQuickCheck(token?: string) {
+    return request<{ sessionId: string; question: string; questionNumber: number }>('/quick-check/start', { method: 'POST' }, token);
+  },
+
+  async answerQuickCheck(sessionId: string, answer: string, conversationHistory: Array<{ question: string; answer: string }>, token?: string) {
+    return request<{
+      completed: boolean;
+      question?: string;
+      questionNumber?: number;
+      result?: {
+        transcript: Array<{ question: string; answer: string }>;
+        summary: string;
+        risk_level: 'low' | 'moderate' | 'high';
+        suggested_next_steps: string[];
+        resources: string[];
+        meta: {
+          approx_questions_asked: number;
+          readiness_score: number;
+        };
+      };
+    }>('/quick-check/answer', { method: 'POST', body: JSON.stringify({ sessionId, answer, conversationHistory }) }, token);
+  },
+
+  async submitExerciseAttempt(exerciseId: string, startTs: string, endTs: string, duration: number, token?: string) {
+    if (USE_MOCK_API) return { xp_awarded: 10, progress_key: 'wp_progress_beats' };
+    return request<{ xp_awarded?: number; progress_key?: string }>('/exercise/attempt', { method: 'POST', body: JSON.stringify({ exercise_id: exerciseId, start_ts: startTs, end_ts: endTs, duration }) }, token);
   }
 };
 
-// WebSocket simulation for real-time updates
-export class MockWebSocket {
-  private listeners: { [key: string]: Function[] } = {};
-
-  connect() {
-    // Simulate connection
-    setTimeout(() => {
-      this.emit('connected', {});
-    }, 100);
-  }
-
-  on(event: string, callback: Function) {
-    if (!this.listeners[event]) {
-      this.listeners[event] = [];
-    }
-    this.listeners[event].push(callback);
-  }
-
-  emit(event: string, data: any) {
-    if (this.listeners[event]) {
-      this.listeners[event].forEach(callback => callback(data));
-    }
-  }
-
-  disconnect() {
-    // Disconnect simulation
-  }
-
-  // Simulate match status updates
-  simulateMatchUpdate() {
-    setTimeout(() => {
-      this.emit('match_status', { status: 'matched', counsellor: { id: 'c1', nameMasked: 'Dr. S***', eta: '5 minutes' } });
-    }, 3000);
-  }
-}
-
-export const mockWebSocket = new MockWebSocket();
-
-// Utility function to check if we should use mock API
 export const isUsingMockApi = () => USE_MOCK_API;
-
-// Configuration helper
-export const getApiConfig = () => ({
-  useMockApi: USE_MOCK_API,
-  baseUrl: API_BASE_URL,
-  token: localStorage.getItem('wp_token')
-});

@@ -149,7 +149,6 @@ const userSchema = new mongoose.Schema({
 });
 
 // Indexes for performance
-userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
 userSchema.index({ institution: 1 });
 userSchema.index({ 'counsellorProfile.verified': 1 });

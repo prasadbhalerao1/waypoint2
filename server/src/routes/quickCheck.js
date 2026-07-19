@@ -4,9 +4,13 @@
  */
 
 import express from 'express';
+import { requireAuth } from '@clerk/express';
 import { startQuickCheck, processAnswer, getQuickCheckHistory } from '../controllers/quickCheckController.js';
 
 const router = express.Router();
+
+// Require Clerk Auth for all Quick Check endpoints
+router.use(requireAuth());
 
 // Start Quick Check session
 router.post('/start', startQuickCheck);

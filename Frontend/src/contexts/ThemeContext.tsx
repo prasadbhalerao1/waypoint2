@@ -1,5 +1,7 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import themesData from '../data/themes.json';
+import { api } from '../mockApi';
 
 export interface Theme {
   id: string;
@@ -53,7 +55,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [progress, setProgress] = useState<number>(0);
 
   useEffect(() => {
-    // Load from localStorage with new keys
+    // Load from localStorage
     const savedTheme = localStorage.getItem('wp_theme');
     const savedMood = localStorage.getItem('wp_mood');
     const savedProgress = localStorage.getItem('wp_progress_beats');
@@ -70,7 +72,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    // Apply CSS variables for theme
+    // Apply CSS variables for active theme
     const root = document.documentElement;
     root.style.setProperty('--wp-primary', currentTheme.primary);
     root.style.setProperty('--wp-accent', currentTheme.accent);
@@ -81,7 +83,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     root.style.setProperty('--wp-gradient-start', currentTheme.gradientStart);
     root.style.setProperty('--wp-gradient-end', currentTheme.gradientEnd);
     
-    // Apply theme class to body
     document.body.className = `themed-bg transition-colors duration-300`;
   }, [currentTheme]);
 
@@ -90,12 +91,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     if (theme) {
       setCurrentTheme(theme);
       localStorage.setItem('wp_theme', themeId);
+      api.updateTheme(themeId).catch(() => {});
     }
   };
 
   const setMood = (newMood: number) => {
     setMoodState(newMood);
     localStorage.setItem('wp_mood', newMood.toString());
+    api.updateMood(newMood).catch(() => {});
   };
 
   const addProgress = (points: number) => {

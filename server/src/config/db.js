@@ -22,8 +22,6 @@ const connectDB = async () => {
     console.log('   URI starts with:', process.env.MONGODB_URI.substring(0, 20) + '...');
     
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 10000, // Timeout after 10s instead of 30s
       socketTimeoutMS: 45000,
     });
